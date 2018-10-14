@@ -17,27 +17,49 @@ public final class HttpRequests implements Requests {
     private static final String PUT = "PUT";
     private static final String DELETE = "DELETE";
     private static final String CONTENT_LENGTH = "Content-Length";
-    private final int timeout;
+    private final int readTimeout;
+    private final int connectTimeout;
+
+    private HttpRequests(int readTimeout, int connectTimeout) {
+	this.readTimeout = readTimeout;
+	this.connectTimeout = connectTimeout;
+    }
 
     public HttpRequests(int timeout) {
-	this.timeout = timeout;
+	this((int) (timeout * 0.75), timeout);
     }
 
     public HttpRequests() {
-	this(3000);
+	this(5000);
+    }
+
+    @Override
+    public Response get(String url, Header... headers) throws Exception {
+	return response(url, GET, new byte[0], headers);
+    }
+
+    @Override
+    public Response post(String url, byte[] body, Header... headers) throws Exception {
+	return response(url, POST, body, headers);
+    }
+
+    @Override
+    public Response put(String url, byte[] body, Header... headers) throws Exception {
+	return response(url, PUT, body, headers);
+    }
+
+    @Override
+    public Response delete(String url, Header... headers) throws Exception {
+	return response(url, DELETE, new byte[0], headers);
     }
 
     private Response response(String url, String method, byte[] body, Header... headers) throws Exception {
-	HttpURLConnection connection = connection(url, method);
-	for (Header h : headers) {
-	    connection.setRequestProperty(h.key(), h.value());
-	}
+	HttpURLConnection connection = connection(url, method, headers);
 	connection.connect();
 	if (body.length > 0) {
 	    BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
 	    os.write(body);
 	}
-
 	int code = connection.getResponseCode();
 	List<Header> responseHeaders = new ArrayList<>();
 	int bodySize = 0;
@@ -54,14 +76,17 @@ public final class HttpRequests implements Requests {
 	return new Response(code, responseHeaders, responseBody);
     }
 
-    private HttpURLConnection connection(String url, String method) throws Exception {
+    private HttpURLConnection connection(String url, String method, Header... headers) throws Exception {
 	HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 	connection.setRequestMethod(method);
 	if (POST.equals(method) || PUT.equals(method)) {
 	    connection.setDoOutput(true);
 	}
-	connection.setReadTimeout(timeout);
-	connection.setConnectTimeout(2 * timeout);
+	connection.setReadTimeout(this.readTimeout);
+	connection.setConnectTimeout(this.connectTimeout);
+	for (Header h : headers) {
+	    connection.setRequestProperty(h.key(), h.value());
+	}
 	return connection;
     }
 

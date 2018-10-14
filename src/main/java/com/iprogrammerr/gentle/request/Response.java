@@ -19,12 +19,20 @@ public final class Response {
 	this(code, new ArrayList<>(), body);
     }
 
+    public Response(int code, List<Header> headers) {
+	this(code, headers, new byte[0]);
+    }
+
     public Response(int code) {
 	this(code, new byte[0]);
     }
 
     public int code() {
 	return this.code;
+    }
+
+    public boolean hasProperCode() {
+	return this.code >= 200 && this.code < 300;
     }
 
     public List<Header> headers() {
