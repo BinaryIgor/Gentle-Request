@@ -17,4 +17,8 @@ public final class Header {
     public String value() {
 	return this.value;
     }
+
+    public boolean is(String key) {
+	return this.key.equalsIgnoreCase(key);
+    }
 }

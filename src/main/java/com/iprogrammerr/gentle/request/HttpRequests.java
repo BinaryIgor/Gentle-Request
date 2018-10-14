@@ -65,8 +65,9 @@ public final class HttpRequests implements Requests {
 	int bodySize = 0;
 	for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
 	    for (String value : entry.getValue()) {
-		responseHeaders.add(new Header(entry.getKey(), value));
-		if (value.equalsIgnoreCase(CONTENT_LENGTH)) {
+		Header header = new Header(entry.getKey(), value);
+		responseHeaders.add(header);
+		if (header.is(CONTENT_LENGTH)) {
 		    bodySize = bodySize(value);
 		}
 	    }
