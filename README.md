@@ -24,7 +24,7 @@ try {
 
 }
 ```
-Or more complex:
+Or more complex ones:
 ```java
 List<FormPart> parts = new ArrayList<>();
 FormPart firstPart = new HttpFormPart("message", "Hello!");
