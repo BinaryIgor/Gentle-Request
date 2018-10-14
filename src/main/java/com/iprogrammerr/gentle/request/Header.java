@@ -21,4 +21,28 @@ public final class Header {
     public boolean is(String key) {
 	return this.key.equalsIgnoreCase(key);
     }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + key.hashCode();
+	result = prime * result + value.hashCode();
+	return result;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+	boolean equal;
+	if (this == object) {
+	    equal = true;
+	} else if (object == null || getClass() != object.getClass()) {
+	    equal = false;
+	} else {
+	    Header other = (Header) object;
+	    equal = other.is(this.key) && this.value.equals(other.value);
+	}
+	return equal;
+    }
+
 }

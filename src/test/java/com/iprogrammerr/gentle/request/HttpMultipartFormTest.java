@@ -16,8 +16,6 @@ import com.iprogrammerr.gentle.request.multipart.HttpMultipartForm;
 
 public final class HttpMultipartFormTest {
 
-    private static final String PROPER_HEADER_PREFIX = "multipart/form-data; boundary=";
-
     @Test
     public void canReadAndWrite() throws Exception {
 	List<FormPart> parts = new ArrayList<>();
@@ -25,10 +23,10 @@ public final class HttpMultipartFormTest {
 	parts.add(firstPart);
 	String boundary = "abcde";
 	HttpMultipartForm multipart = new HttpMultipartForm(boundary, parts);
-	String properHeader = PROPER_HEADER_PREFIX + boundary;
-	assertTrue(multipart.typeHeader().equals(properHeader));
-	HttpMultipartForm parsedMultipart = new HttpMultipartForm(multipart.body(), boundary);
-	assertTrue(multipart.typeHeader().equals(parsedMultipart.typeHeader()));
+	Header properHeader = properHeader(boundary);
+	assertTrue(multipart.header().equals(properHeader));
+	HttpMultipartForm parsedMultipart = new HttpMultipartForm(boundary, multipart.body());
+	assertTrue(multipart.header().equals(parsedMultipart.header()));
 	partsShouldBeEqual(parts.iterator(), parsedMultipart.parts().iterator());
 	parts.clear();
 	firstPart = new HttpFormPart("json", "json.json", "application/json", "{\"secret\": true}".getBytes());
@@ -37,11 +35,15 @@ public final class HttpMultipartFormTest {
 	parts.add(secondPart);
 	boundary = "2ddd55g";
 	multipart = new HttpMultipartForm(boundary, parts);
-	properHeader = PROPER_HEADER_PREFIX + boundary;
-	assertTrue(multipart.typeHeader().equals(properHeader));
-	parsedMultipart = new HttpMultipartForm(multipart.body(), boundary);
-	assertTrue(multipart.typeHeader().equals(parsedMultipart.typeHeader()));
+	properHeader = properHeader(boundary);
+	assertTrue(multipart.header().equals(properHeader));
+	parsedMultipart = new HttpMultipartForm(boundary, multipart.body());
+	assertTrue(multipart.header().equals(parsedMultipart.header()));
 	partsShouldBeEqual(parts.iterator(), parsedMultipart.parts().iterator());
+    }
+
+    private Header properHeader(String boundary) {
+	return new Header("Content-Type", "multipart/form-data; boundary=" + boundary);
     }
 
     private void partsShouldBeEqual(Iterator<FormPart> first, Iterator<FormPart> second) throws Exception {

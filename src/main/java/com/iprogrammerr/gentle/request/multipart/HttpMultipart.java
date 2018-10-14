@@ -3,28 +3,34 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
 
 public final class HttpMultipart implements Multipart {
 
     private static final String TWO_HYPHENS = "--";
+    private final Header header;
     private byte[] parsed;
-    private final String type;
     private final String boundary;
     private final List<Part> parts;
 
-    public HttpMultipart(String type, String boundary, byte[] parsed) {
-	this.type = type;
+    private HttpMultipart(Header header, String boundary, byte[] parsed, List<Part> parts) {
+	this.header = header;
 	this.parsed = parsed;
 	this.boundary = boundary;
-	this.parts = new ArrayList<>();
+	this.parts = parts;
+    }
+
+    private HttpMultipart(String type, String boundary, byte[] parsed, List<Part> parts) {
+	this(new Header("Content-Type", "multipart/" + type + "; boundary=" + boundary), boundary, parsed, parts);
+    }
+
+    public HttpMultipart(String type, String boundary, byte[] parsed) {
+	this(type, boundary, parsed, new ArrayList<>());
     }
 
     public HttpMultipart(String type, String boundary, List<Part> parts) {
-	this.type = type;
-	this.parsed = new byte[0];
-	this.boundary = boundary;
-	this.parts = parts;
+	this(type, boundary, new byte[0], parts);
     }
 
     @Override
@@ -39,8 +45,8 @@ public final class HttpMultipart implements Multipart {
     }
 
     @Override
-    public String typeHeader() {
-	return "multipart/" + this.type + "; boundary=" + this.boundary;
+    public Header header() {
+	return this.header;
     }
 
     @Override

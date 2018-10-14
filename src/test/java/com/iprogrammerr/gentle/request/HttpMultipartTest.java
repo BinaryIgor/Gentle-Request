@@ -24,10 +24,10 @@ public final class HttpMultipartTest {
 	String boundary = "abcde";
 	String type = "mixed";
 	HttpMultipart multipart = new HttpMultipart(type, boundary, parts);
-	String properHeader = String.format("multipart/%s; boundary=%s", type, boundary);
-	assertTrue(multipart.typeHeader().equals(properHeader));
+	Header properHeader = properHeader(type, boundary);
+	assertTrue(multipart.header().equals(properHeader));
 	HttpMultipart parsedMultipart = new HttpMultipart(type, boundary, multipart.body());
-	assertTrue(multipart.typeHeader().equals(parsedMultipart.typeHeader()));
+	assertTrue(multipart.header().equals(parsedMultipart.header()));
 	partsShouldBeEqual(parts.iterator(), parsedMultipart.parts().iterator());
 	parts.clear();
 	firstPart = new HttpPart("application/json", "{\"secret\": true}".getBytes());
@@ -36,10 +36,10 @@ public final class HttpMultipartTest {
 	parts.add(secondPart);
 	boundary = "2ddd55g";
 	multipart = new HttpMultipart(type, boundary, parts);
-	properHeader = String.format("multipart/%s; boundary=%s", type, boundary);
-	assertTrue(multipart.typeHeader().equals(properHeader));
+	properHeader = properHeader(type, boundary);
+	assertTrue(multipart.header().equals(properHeader));
 	parsedMultipart = new HttpMultipart(type, boundary, multipart.body());
-	assertTrue(multipart.typeHeader().equals(parsedMultipart.typeHeader()));
+	assertTrue(multipart.header().equals(parsedMultipart.header()));
 	partsShouldBeEqual(parts.iterator(), parsedMultipart.parts().iterator());
     }
 
@@ -50,5 +50,9 @@ public final class HttpMultipartTest {
 	    assertTrue(fp.contentType().equals(sp.contentType()));
 	    assertTrue(Arrays.equals(fp.content(), sp.content()));
 	}
+    }
+
+    private Header properHeader(String type, String boundary) {
+	return new Header("Content-Type", String.format("multipart/%s; boundary=%s", type, boundary));
     }
 }

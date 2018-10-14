@@ -3,25 +3,34 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
 
 public final class HttpMultipartForm implements MultipartForm {
 
     private static final String TWO_HYPHENS = "--";
-    private byte[] parsed;
+    private final Header header;
     private final String boundary;
+    private byte[] parsed;
     private final List<FormPart> parts;
 
-    public HttpMultipartForm(byte[] source, String boundary) {
-	this.parsed = source;
+    private HttpMultipartForm(Header header, String boundary, byte[] parsed, List<FormPart> parts) {
+	this.header = header;
 	this.boundary = boundary;
-	this.parts = new ArrayList<>();
+	this.parsed = parsed;
+	this.parts = parts;
+    }
+
+    private HttpMultipartForm(String boundary, byte[] parsed, List<FormPart> parts) {
+	this(new Header("Content-Type", "multipart/form-data; boundary=" + boundary), boundary, parsed, parts);
+    }
+
+    public HttpMultipartForm(String boundary, byte[] parsed) {
+	this(boundary, parsed, new ArrayList<>());
     }
 
     public HttpMultipartForm(String boundary, List<FormPart> parts) {
-	this.parsed = new byte[0];
-	this.boundary = boundary;
-	this.parts = parts;
+	this(boundary, new byte[0], parts);
     }
 
     @Override
@@ -36,8 +45,8 @@ public final class HttpMultipartForm implements MultipartForm {
     }
 
     @Override
-    public String typeHeader() {
-	return "multipart/form-data; boundary=" + this.boundary;
+    public Header header() {
+	return this.header;
     }
 
     @Override

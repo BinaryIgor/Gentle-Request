@@ -1,8 +1,10 @@
 package com.iprogrammerr.gentle.request.multipart;
 
+import com.iprogrammerr.gentle.request.Header;
+
 public interface MultipartForm {
 
-    String typeHeader();
+    Header header();
 
     Iterable<FormPart> parts() throws Exception;
 

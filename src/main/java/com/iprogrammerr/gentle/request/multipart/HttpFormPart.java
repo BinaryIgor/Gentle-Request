@@ -105,8 +105,8 @@ public final class HttpFormPart implements FormPart {
 	}
 	String contentType;
 	if (lines.length > 1 && !lines[1].isEmpty()) {
-	    String[] contentTypeHeader = lines[1].split(COLON);
-	    contentType = contentTypeHeader.length > 1 ? contentTypeHeader[1].trim() : "";
+	    String[] header = lines[1].split(COLON);
+	    contentType = header.length > 1 ? header[1].trim() : "";
 	} else {
 	    contentType = TEXT_PLAIN;
 	}
