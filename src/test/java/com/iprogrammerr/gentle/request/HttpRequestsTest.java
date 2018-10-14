@@ -40,7 +40,7 @@ public final class HttpRequestsTest {
 	};
 	consumer.accept(this.requests.get(BASE_URL));
 	byte[] body = "{\"value\": 44}".getBytes();
-	consumer.accept(this.requests.post(BASE_URL, body));
+	consumer.accept(this.requests.post(BASE_URL, body, new Header("Authorization", "Secret")));
 	consumer.accept(this.requests.put(BASE_URL + "/1", body));
 	consumer.accept(this.requests.delete(BASE_URL + "/1"));
     }

@@ -59,6 +59,7 @@ public final class HttpRequests implements Requests {
 	if (body.length > 0) {
 	    BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
 	    os.write(body);
+	    os.close();
 	}
 	int code = connection.getResponseCode();
 	List<Header> responseHeaders = new ArrayList<>();
@@ -77,7 +78,7 @@ public final class HttpRequests implements Requests {
 	}
 	byte[] responseBody = body(connection.getInputStream(), bodySize);
 	connection.disconnect();
-	return new Response(code, responseHeaders, responseBody);
+	return new HttpResponse(code, responseHeaders, responseBody);
     }
 
     private HttpURLConnection connection(String url, String method, Header... headers) throws Exception {
@@ -105,21 +106,22 @@ public final class HttpRequests implements Requests {
     }
 
     private byte[] body(InputStream inputStream, int size) throws Exception {
-	BufferedInputStream bis = new BufferedInputStream(inputStream);
-	byte[] body;
-	if (size < 1) {
-	    body = packet(bis);
-	} else {
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    int read = 0;
-	    while (read != size) {
-		byte[] packet = packet(bis);
-		baos.write(packet);
-		read += packet.length;
+	try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
+	    byte[] body;
+	    if (size < 1) {
+		body = packet(bis);
+	    } else {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int read = 0;
+		while (read != size) {
+		    byte[] packet = packet(bis);
+		    baos.write(packet);
+		    read += packet.length;
+		}
+		body = baos.toByteArray();
 	    }
-	    body = baos.toByteArray();
+	    return body;
 	}
-	return body;
     }
 
     private byte[] packet(InputStream inputStream) throws Exception {

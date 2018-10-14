@@ -1,7 +1,6 @@
 package com.iprogrammerr.gentle.request.multipart;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.iprogrammerr.gentle.request.Header;
@@ -35,7 +34,7 @@ public final class HttpMultipartForm implements MultipartForm {
     }
 
     @Override
-    public Collection<FormPart> parts() {
+    public List<FormPart> parts() {
 	if (this.parts.isEmpty()) {
 	    List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary).parts(this.parsed);
 	    for (byte[] part : parts) {

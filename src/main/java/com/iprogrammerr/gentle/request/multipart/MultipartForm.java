@@ -1,6 +1,6 @@
 package com.iprogrammerr.gentle.request.multipart;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.iprogrammerr.gentle.request.Header;
 
@@ -8,7 +8,7 @@ public interface MultipartForm {
 
     Header header();
 
-    Collection<FormPart> parts();
+    List<FormPart> parts();
 
     byte[] body() throws Exception;
 }
