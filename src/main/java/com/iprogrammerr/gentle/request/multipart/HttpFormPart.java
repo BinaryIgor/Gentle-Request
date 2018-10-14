@@ -72,7 +72,7 @@ public final class HttpFormPart implements FormPart {
     @Override
     public byte[] parsed() throws Exception {
 	if (this.parsed.length < 1) {
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream(this.content().length);
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream(content().length);
 	    baos.write(FIRST_LINE_PREFIX.getBytes());
 	    baos.write(String.format("name=\"%s\"", name()).getBytes());
 	    if (!filename().isEmpty()) {

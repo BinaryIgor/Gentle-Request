@@ -20,7 +20,7 @@ public final class HttpRequests implements Requests {
     private final int readTimeout;
     private final int connectTimeout;
 
-    private HttpRequests(int readTimeout, int connectTimeout) {
+    public HttpRequests(int readTimeout, int connectTimeout) {
 	this.readTimeout = readTimeout;
 	this.connectTimeout = connectTimeout;
     }

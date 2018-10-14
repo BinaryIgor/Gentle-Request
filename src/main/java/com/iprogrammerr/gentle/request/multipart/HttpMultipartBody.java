@@ -16,7 +16,7 @@ public final class HttpMultipartBody implements MultipartBody {
 
     @Override
     public byte[] content() throws Exception {
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	ByteArrayOutputStream baos = new ByteArrayOutputStream(bufferSize());
 	String boundary = TWO_HYPHENS + this.boundary;
 	baos.write(boundary.getBytes());
 	baos.write(CRLF.getBytes());
@@ -31,6 +31,14 @@ public final class HttpMultipartBody implements MultipartBody {
 	    }
 	}
 	return baos.toByteArray();
+    }
+
+    private int bufferSize() throws Exception {
+	int size = 0;
+	for (Part part : this.parts) {
+	    size += part.content().length;
+	}
+	return size;
     }
 
 }
