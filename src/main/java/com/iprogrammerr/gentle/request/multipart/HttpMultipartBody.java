@@ -21,7 +21,6 @@ public final class HttpMultipartBody implements MultipartBody {
 	baos.write(boundary.getBytes());
 	baos.write(CRLF.getBytes());
 	for (int i = 0; i < this.parts.length; i++) {
-	    System.out.println("Writing = " + this.parts[i].parsed().length);
 	    baos.write(this.parts[i].parsed());
 	    baos.write(CRLF.getBytes());
 	    baos.write(boundary.getBytes());

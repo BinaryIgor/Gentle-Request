@@ -32,15 +32,15 @@ public final class StringsObjects implements KeysValues {
 		return clazz.cast(kv.value());
 	    }
 	}
-	throw new Exception();
+	throw new Exception(String.format("%s associated with %s key is not present", clazz, key));
     }
 
     @Override
     public KeysValues put(String key, Object value) {
 	KeyValue keyValue = new StringObject(key, value);
-	int indexOfPrevious = index(keyValue.key());
-	if (indexOfPrevious >= 0) {
-	    this.keysValues.set(indexOfPrevious, keyValue);
+	int previous = index(keyValue.key());
+	if (previous >= 0) {
+	    this.keysValues.set(previous, keyValue);
 	} else {
 	    this.keysValues.add(keyValue);
 	}

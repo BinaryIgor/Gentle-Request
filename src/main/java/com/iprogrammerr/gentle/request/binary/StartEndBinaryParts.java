@@ -8,27 +8,27 @@ public final class StartEndBinaryParts implements BinaryParts {
 
     private final byte[] start;
     private final byte[] end;
-    private final byte[] source;
 
-    public StartEndBinaryParts(byte[] start, byte[] end, byte[] source) {
+    public StartEndBinaryParts(byte[] start, byte[] end) {
 	this.start = start;
 	this.end = end;
-	this.source = source;
     }
 
     @Override
-    public List<byte[]> parts() {
+    public List<byte[]> parts(byte[] source) {
 	List<byte[]> parts = new ArrayList<>();
-	if (this.source.length > (start.length + end.length)) {
+	if (source.length > this.start.length) {
 	    int startIndex = 0;
-	    for (int i = 0; i < this.source.length; i++) {
+	    for (int i = 0; i < source.length; i++) {
 		if (startIndex == this.start.length) {
-		    byte[] part = part(i);
+		    byte[] part = part(i, source);
 		    parts.add(part);
 		    startIndex = 0;
 		    i += part.length - 1;
-		} else if (this.source[i] == this.start[startIndex]) {
+		} else if (source[i] == this.start[startIndex]) {
 		    ++startIndex;
+		} else if ((source.length - i) < this.start.length) {
+		    break;
 		} else {
 		    startIndex = 0;
 		}
@@ -37,12 +37,12 @@ public final class StartEndBinaryParts implements BinaryParts {
 	return parts;
     }
 
-    private byte[] part(int start) {
-	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	for (int i = start; i < this.source.length; i++) {
+    private byte[] part(int start, byte[] source) {
+	ByteArrayOutputStream baos = new ByteArrayOutputStream(source.length / 4);
+	for (int i = start; i < source.length; i++) {
 	    boolean endFound = true;
-	    for (int j = 0; j < this.end.length && (i + j) < this.source.length; j++) {
-		if (this.source[i + j] != this.end[j]) {
+	    for (int j = 0; j < this.end.length && (i + j) < source.length; j++) {
+		if (source[i + j] != this.end[j]) {
 		    endFound = false;
 		    break;
 		}
@@ -50,7 +50,7 @@ public final class StartEndBinaryParts implements BinaryParts {
 	    if (endFound) {
 		break;
 	    }
-	    baos.write(this.source[i]);
+	    baos.write(source[i]);
 	}
 	byte[] part = baos.toByteArray();
 	return part;

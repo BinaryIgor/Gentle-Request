@@ -3,12 +3,14 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
+import com.iprogrammerr.gentle.request.binary.HeadBodyPattern;
 import com.iprogrammerr.gentle.request.data.KeysValues;
 import com.iprogrammerr.gentle.request.data.StringsObjects;
 
 public final class HttpFormPart implements FormPart {
 
-    private static final String FIRST_LINE_PREFIX = "Content-Disposition: form-data;";
+    private static final HeadBodyPattern PATTERN = new HeadBodyPattern();
+    private static final String FIRST_LINE_PREFIX = "Content-Disposition: form-data; ";
     private static final String CRLF = "\r\n";
     private static final String TEXT_PLAIN = "text/plain";
     private static final String SEMICOLON = ";";
@@ -70,14 +72,14 @@ public final class HttpFormPart implements FormPart {
     @Override
     public byte[] parsed() throws Exception {
 	if (this.parsed.length < 1) {
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream(this.content().length);
 	    baos.write(FIRST_LINE_PREFIX.getBytes());
-	    baos.write((" name=\"" + name() + "\"").getBytes());
+	    baos.write(String.format("name=\"%s\"", name()).getBytes());
 	    if (!filename().isEmpty()) {
-		baos.write(("; filename=\"" + filename() + "\"").getBytes());
+		baos.write(String.format("; filename=\"%s\"", filename()).getBytes());
 	    }
 	    if (!contentType().equals(TEXT_PLAIN)) {
-		baos.write((CRLF + "Content-Type: " + contentType()).getBytes());
+		baos.write(String.format("%sContent-Type: %s", CRLF, contentType()).getBytes());
 	    }
 	    baos.write((CRLF + CRLF).getBytes());
 	    baos.write(content());
@@ -87,10 +89,12 @@ public final class HttpFormPart implements FormPart {
     }
 
     private void read() throws Exception {
-	String[] lines = new String(this.parsed).split(CRLF);
-	if (lines.length < 3) {
-	    throw new Exception("Form part has to have at least three segments");
+	int headBody = PATTERN.index(this.parsed);
+	if (headBody == -1) {
+	    throw new Exception("Part has to have a body");
 	}
+	String head = new String(Arrays.copyOf(this.parsed, headBody));
+	String[] lines = head.split(CRLF);
 	String[] firstLines = lines[0].split(SEMICOLON);
 	String name = valueFromPair(firstLines[1].trim());
 	String filename;
@@ -99,16 +103,14 @@ public final class HttpFormPart implements FormPart {
 	} else {
 	    filename = "";
 	}
-	int bodyIndex = lines[0].getBytes().length + (CRLF + CRLF).getBytes().length;
 	String contentType;
-	if (!lines[1].isEmpty()) {
-	    bodyIndex += lines[1].getBytes().length + CRLF.getBytes().length;
+	if (lines.length > 1 && !lines[1].isEmpty()) {
 	    String[] contentTypeHeader = lines[1].split(COLON);
 	    contentType = contentTypeHeader.length > 1 ? contentTypeHeader[1].trim() : "";
 	} else {
 	    contentType = TEXT_PLAIN;
 	}
-	byte[] body = Arrays.copyOfRange(this.parsed, bodyIndex, this.parsed.length);
+	byte[] body = Arrays.copyOfRange(this.parsed, headBody + PATTERN.value().length, this.parsed.length);
 	this.data.put("name", name).put("filename", filename).put("contentType", contentType).put("content", body);
     }
 

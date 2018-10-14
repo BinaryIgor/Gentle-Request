@@ -48,7 +48,7 @@ public final class HttpPart implements Part {
     @Override
     public byte[] parsed() throws Exception {
 	if (this.parsed.length < 1) {
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream(content().length);
 	    baos.write(CRLF.getBytes());
 	    if (!contentType().equals(TEXT_PLAIN)) {
 		baos.write(CONTENT_TYPE_PREFIX.getBytes());

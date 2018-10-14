@@ -64,6 +64,9 @@ public final class HttpRequests implements Requests {
 	List<Header> responseHeaders = new ArrayList<>();
 	int bodySize = 0;
 	for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+	    if (entry.getKey() == null) {
+		continue;
+	    }
 	    for (String value : entry.getValue()) {
 		Header header = new Header(entry.getKey(), value);
 		responseHeaders.add(header);

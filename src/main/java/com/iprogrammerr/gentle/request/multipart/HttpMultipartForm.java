@@ -8,7 +8,6 @@ import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
 public final class HttpMultipartForm implements MultipartForm {
 
     private static final String TWO_HYPHENS = "--";
-    private static final String CRLF = "\r\n";
     private byte[] parsed;
     private final String boundary;
     private final List<FormPart> parts;
@@ -28,7 +27,7 @@ public final class HttpMultipartForm implements MultipartForm {
     @Override
     public Iterable<FormPart> parts() throws Exception {
 	if (this.parts.isEmpty()) {
-	    List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary, this.parsed).parts();
+	    List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary).parts(this.parsed);
 	    for (byte[] part : parts) {
 		this.parts.add(new HttpFormPart(part));
 	    }

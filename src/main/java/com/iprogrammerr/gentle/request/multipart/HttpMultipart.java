@@ -3,6 +3,8 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
+
 public final class HttpMultipart implements Multipart {
 
     private static final String TWO_HYPHENS = "--";
@@ -28,10 +30,9 @@ public final class HttpMultipart implements Multipart {
     @Override
     public Iterable<Part> parts() throws Exception {
 	if (this.parts.isEmpty()) {
-	    String boundary = TWO_HYPHENS + this.boundary;
-	    String[] parts = new String(this.parsed).split(boundary);
-	    for (int i = 1; i < parts.length; i++) {
-		this.parts.add(new HttpPart(parts[i].getBytes()));
+	    List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary).parts(this.parsed);
+	    for (byte[] part : parts) {
+		this.parts.add(new HttpPart(part));
 	    }
 	}
 	return this.parts;
