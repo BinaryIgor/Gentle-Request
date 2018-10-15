@@ -39,3 +39,14 @@ boundary = response.header("Content-Type").value().split("boundary=")[1];
 multipart = new HttpMultipartForm(boundary, response.body());
 parts = multipart.parts();
 ```
+## Maven
+```xml
+<dependency>
+  <groupId>com.iprogrammerr</groupId>
+  <artifactId>gentle-request</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+## Gradle
+```
+compile 'com.iprogrammerr:gentle-request:1.0.0'
