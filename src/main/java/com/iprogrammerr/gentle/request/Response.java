@@ -2,6 +2,8 @@ package com.iprogrammerr.gentle.request;
 
 import java.util.List;
 
+import com.iprogrammerr.gentle.request.binary.SmartBinary;
+
 public interface Response {
 
     int code();
@@ -14,5 +16,5 @@ public interface Response {
 
     Header header(String key) throws Exception;
 
-    byte[] body();
+    SmartBinary body();
 }

@@ -2,13 +2,16 @@ package com.iprogrammerr.gentle.request;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.iprogrammerr.gentle.request.binary.Binary;
+import com.iprogrammerr.gentle.request.binary.OnePacketBinary;
+import com.iprogrammerr.gentle.request.binary.PacketsBinary;
 
 public final class HttpRequests implements Requests {
 
@@ -34,27 +37,42 @@ public final class HttpRequests implements Requests {
     }
 
     @Override
-    public Response get(String url, Header... headers) throws Exception {
+    public Response getResponse(String url, Header... headers) throws Exception {
 	return response(url, GET, new byte[0], headers);
     }
 
     @Override
-    public Response post(String url, byte[] body, Header... headers) throws Exception {
+    public Response postResponse(String url, byte[] body, Header... headers) throws Exception {
 	return response(url, POST, body, headers);
     }
 
     @Override
-    public Response put(String url, byte[] body, Header... headers) throws Exception {
+    public Response postResponse(String url, Header... headers) throws Exception {
+	return response(url, POST, new byte[0], headers);
+    }
+
+    @Override
+    public Response putResponse(String url, byte[] body, Header... headers) throws Exception {
 	return response(url, PUT, body, headers);
     }
 
     @Override
-    public Response delete(String url, Header... headers) throws Exception {
+    public Response deleteResponse(String url, Header... headers) throws Exception {
 	return response(url, DELETE, new byte[0], headers);
     }
 
+    @Override
+    public Response methodResponse(String method, String url, byte[] body, Header... headers) throws Exception {
+	return response(url, method, body, headers);
+    }
+
+    @Override
+    public Response methodResponse(String method, String url, Header... headers) throws Exception {
+	return response(url, method, new byte[0], headers);
+    }
+
     private Response response(String url, String method, byte[] body, Header... headers) throws Exception {
-	HttpURLConnection connection = connection(url, method, headers);
+	HttpURLConnection connection = connection(url, method, body.length > 0 ? true : false, headers);
 	connection.connect();
 	if (body.length > 0) {
 	    BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
@@ -81,12 +99,11 @@ public final class HttpRequests implements Requests {
 	return new HttpResponse(code, responseHeaders, responseBody);
     }
 
-    private HttpURLConnection connection(String url, String method, Header... headers) throws Exception {
+    private HttpURLConnection connection(String url, String method, boolean output, Header... headers)
+	    throws Exception {
 	HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 	connection.setRequestMethod(method);
-	if (POST.equals(method) || PUT.equals(method)) {
-	    connection.setDoOutput(true);
-	}
+	connection.setDoOutput(output);
 	connection.setReadTimeout(this.readTimeout);
 	connection.setConnectTimeout(this.connectTimeout);
 	for (Header h : headers) {
@@ -106,43 +123,16 @@ public final class HttpRequests implements Requests {
     }
 
     private byte[] body(InputStream inputStream, int size) throws Exception {
-	try (BufferedInputStream bis = new BufferedInputStream(inputStream)) {
+	try (BufferedInputStream is = new BufferedInputStream(inputStream)) {
 	    byte[] body;
+	    Binary binary = new OnePacketBinary(is);
 	    if (size < 1) {
-		body = packet(bis);
+		body = binary.content();
 	    } else {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		int read = 0;
-		while (read != size) {
-		    byte[] packet = packet(bis);
-		    baos.write(packet);
-		    read += packet.length;
-		}
-		body = baos.toByteArray();
+		body = new PacketsBinary(binary, size).content();
 	    }
 	    return body;
 	}
-    }
-
-    private byte[] packet(InputStream inputStream) throws Exception {
-	int available = inputStream.available();
-	if (available == 0) {
-	    available = 1024;
-	}
-	byte[] buffer = new byte[available];
-	int read = inputStream.read(buffer);
-	byte[] readBytes;
-	if (read == buffer.length) {
-	    readBytes = buffer;
-	} else if (read > 0) {
-	    readBytes = new byte[read];
-	    for (int i = 0; i < read; i++) {
-		readBytes[i] = buffer[i];
-	    }
-	} else {
-	    readBytes = new byte[0];
-	}
-	return readBytes;
     }
 
 }

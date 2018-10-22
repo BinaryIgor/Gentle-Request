@@ -26,8 +26,8 @@ public final class Header {
     public int hashCode() {
 	final int prime = 31;
 	int result = 1;
-	result = prime * result + key.hashCode();
-	result = prime * result + value.hashCode();
+	result = prime * result + this.key.hashCode();
+	result = prime * result + this.value.hashCode();
 	return result;
     }
 

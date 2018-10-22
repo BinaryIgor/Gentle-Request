@@ -3,16 +3,23 @@ package com.iprogrammerr.gentle.request;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iprogrammerr.gentle.request.binary.HttpBinary;
+import com.iprogrammerr.gentle.request.binary.SmartBinary;
+
 public final class HttpResponse implements Response {
 
     private final int code;
     private final List<Header> headers;
-    private final byte[] body;
+    private final SmartBinary body;
 
-    public HttpResponse(int code, List<Header> headers, byte[] body) {
+    public HttpResponse(int code, List<Header> headers, SmartBinary body) {
 	this.code = code;
 	this.headers = headers;
 	this.body = body;
+    }
+
+    public HttpResponse(int code, List<Header> headers, byte[] body) {
+	this(code, headers, new HttpBinary(body));
     }
 
     public HttpResponse(int code, byte[] body) {
@@ -63,7 +70,7 @@ public final class HttpResponse implements Response {
     }
 
     @Override
-    public byte[] body() {
+    public SmartBinary body() {
 	return this.body;
     }
 }

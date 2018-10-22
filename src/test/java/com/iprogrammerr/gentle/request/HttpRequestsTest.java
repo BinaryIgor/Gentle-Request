@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.function.Consumer;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 import com.iprogrammerr.gentle.request.exception.ToCatchException;
@@ -21,10 +22,10 @@ public final class HttpRequestsTest {
     public void shouldNotAcceptBadProtocols() {
 	ToCatchException toCatch = new ToCatchException();
 	String badProtocolUrl = BASE_URL.replace("http", "abc");
-	assertTrue(toCatch.hasCatched(() -> this.requests.get(badProtocolUrl)));
-	assertTrue(toCatch.hasCatched(() -> this.requests.post(badProtocolUrl, new byte[0])));
-	assertTrue(toCatch.hasCatched(() -> this.requests.put(badProtocolUrl, new byte[0])));
-	assertTrue(toCatch.hasCatched(() -> this.requests.delete(badProtocolUrl)));
+	assertTrue(toCatch.hasCatched(() -> this.requests.getResponse(badProtocolUrl)));
+	assertTrue(toCatch.hasCatched(() -> this.requests.postResponse(badProtocolUrl, new byte[0])));
+	assertTrue(toCatch.hasCatched(() -> this.requests.putResponse(badProtocolUrl, new byte[0])));
+	assertTrue(toCatch.hasCatched(() -> this.requests.deleteResponse(badProtocolUrl)));
     }
 
     @Test
@@ -34,15 +35,18 @@ public final class HttpRequestsTest {
 	    @Override
 	    public void accept(Response response) {
 		assertTrue(response.hasProperCode());
-		assertTrue(response.body().length > 0);
+		assertTrue(response.body().value().length > 0);
 	    }
 
 	};
-	consumer.accept(this.requests.get(BASE_URL));
-	byte[] body = "{\"value\": 44}".getBytes();
-	consumer.accept(this.requests.post(BASE_URL, body, new Header("Authorization", "Secret")));
-	consumer.accept(this.requests.put(BASE_URL + "/1", body));
-	consumer.accept(this.requests.delete(BASE_URL + "/1"));
+	consumer.accept(this.requests.getResponse(BASE_URL));
+	JSONObject json = new JSONObject();
+	json.put("id", 44);
+	json.put("name", "super");
+	byte[] body = json.toString().getBytes();
+	consumer.accept(this.requests.postResponse(BASE_URL, body, new Header("Authorization", "Secret")));
+	consumer.accept(this.requests.putResponse(BASE_URL + "/1", body));
+	consumer.accept(this.requests.deleteResponse(BASE_URL + "/1"));
     }
 
 }

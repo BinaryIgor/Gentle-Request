@@ -3,8 +3,8 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
-import com.iprogrammerr.gentle.request.data.KeysValues;
-import com.iprogrammerr.gentle.request.data.StringsObjects;
+import com.iprogrammerr.gentle.request.data.Attributes;
+import com.iprogrammerr.gentle.request.data.TypedMap;
 
 public final class HttpPart implements Part {
 
@@ -13,16 +13,19 @@ public final class HttpPart implements Part {
     private static final String CONTENT_TYPE_PREFIX = "Content-Type: ";
     private static final String COLON = ":";
     private byte[] parsed;
-    private final KeysValues data;
+    private final TypedMap data;
+
+    private HttpPart(byte[] parsed, TypedMap data) {
+	this.parsed = parsed;
+	this.data = data;
+    }
 
     public HttpPart(byte[] parsed) {
-	this.parsed = parsed;
-	this.data = new StringsObjects();
+	this(parsed, new Attributes());
     }
 
     public HttpPart(String contentType, byte[] content) {
-	this.parsed = new byte[0];
-	this.data = new StringsObjects().put("contentType", contentType).put("content", content);
+	this(new byte[0], new Attributes().put("contentType", contentType).put("content", content));
     }
 
     public HttpPart(String content) {
@@ -34,7 +37,7 @@ public final class HttpPart implements Part {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("contentType", String.class);
+	return this.data.stringValue("contentType");
     }
 
     @Override
@@ -42,7 +45,7 @@ public final class HttpPart implements Part {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("content", byte[].class);
+	return this.data.binaryValue("content");
     }
 
     @Override

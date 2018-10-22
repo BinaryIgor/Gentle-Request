@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 import com.iprogrammerr.gentle.request.binary.HeadBodyPattern;
-import com.iprogrammerr.gentle.request.data.KeysValues;
-import com.iprogrammerr.gentle.request.data.StringsObjects;
+import com.iprogrammerr.gentle.request.data.Attributes;
+import com.iprogrammerr.gentle.request.data.TypedMap;
 
 public final class HttpFormPart implements FormPart {
 
@@ -16,17 +16,20 @@ public final class HttpFormPart implements FormPart {
     private static final String SEMICOLON = ";";
     private static final String COLON = ":";
     private byte[] parsed;
-    private final KeysValues data;
+    private final TypedMap data;
+
+    private HttpFormPart(byte[] parsed, TypedMap data) {
+	this.parsed = parsed;
+	this.data = data;
+    }
 
     public HttpFormPart(String name, String filename, String contentType, byte[] content) {
-	this.parsed = new byte[0];
-	this.data = new StringsObjects().put("name", name).put("filename", filename).put("contentType", contentType)
-		.put("content", content);
+	this(new byte[0], new Attributes().put("name", name).put("filename", filename).put("contentType", contentType)
+		.put("content", content));
     }
 
     public HttpFormPart(byte[] parsed) {
-	this.parsed = parsed;
-	this.data = new StringsObjects();
+	this(parsed, new Attributes());
     }
 
     public HttpFormPart(String name, String content) {
@@ -42,7 +45,7 @@ public final class HttpFormPart implements FormPart {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("name", String.class);
+	return this.data.stringValue("name");
     }
 
     @Override
@@ -50,7 +53,7 @@ public final class HttpFormPart implements FormPart {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("filename", String.class);
+	return this.data.stringValue("filename");
     }
 
     @Override
@@ -58,7 +61,7 @@ public final class HttpFormPart implements FormPart {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("contentType", String.class);
+	return this.data.stringValue("contentType");
     }
 
     @Override
@@ -66,7 +69,7 @@ public final class HttpFormPart implements FormPart {
 	if (this.data.isEmpty()) {
 	    read();
 	}
-	return this.data.value("content", byte[].class);
+	return this.data.binaryValue("content");
     }
 
     @Override
