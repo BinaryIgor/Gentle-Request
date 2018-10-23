@@ -22,7 +22,7 @@ public final class HttpBinary implements SmartBinary {
 
     @Override
     public JSONObject jsonValue() throws Exception {
-	return new JSONObject(new String(this.source));
+	return this.source.length > 0 ? new JSONObject(new String(this.source)) : new JSONObject();
     }
 
 }

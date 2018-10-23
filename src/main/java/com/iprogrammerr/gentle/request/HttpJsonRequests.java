@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 public final class HttpJsonRequests implements JsonRequests {
 
+    private static final Header JSON_HEADER = new Header("Content-Type", "application/json");
     private final Requests base;
 
     public HttpJsonRequests(Requests base) {
@@ -48,12 +49,11 @@ public final class HttpJsonRequests implements JsonRequests {
     }
 
     private Header[] headers(Header[] headers) {
-	Header header = new Header("Content-Type", "application/json");
 	if (headers.length == 0) {
-	    headers = new Header[] { header };
+	    headers = new Header[] { JSON_HEADER };
 	} else {
 	    headers = Arrays.copyOf(headers, headers.length + 1);
-	    headers[headers.length - 1] = header;
+	    headers[headers.length - 1] = JSON_HEADER;
 	}
 	return headers;
     }

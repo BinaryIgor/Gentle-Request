@@ -21,4 +21,5 @@ public final class HttpBinaryTest {
 	assertTrue(json.toString().equals(binary.stringValue()));
 	assertTrue(binary.jsonValue().get("name").equals(name));
     }
+
 }
