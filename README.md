@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/Iprogrammerr/Gentle-Request.svg?branch=development)](https://travis-ci.com/Iprogrammerr/Gentle-Request)
 # Gentle-Request
 Make simple requests:
 * raw
