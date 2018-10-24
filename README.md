@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/Iprogrammerr/Gentle-Request.svg?branch=development)](https://travis-ci.com/Iprogrammerr/Gentle-Request)
+[![Test Coverage](https://codecov.io/gh/Iprogrammerr/Gentle-Request/branch/development/graphs/badge.svg)](https://codecov.io/gh/Iprogrammerr/Gentle-Request/branch/development)
 # Gentle-Request
 Make simple requests:
 * raw
