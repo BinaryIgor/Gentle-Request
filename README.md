@@ -87,9 +87,9 @@ parts = multipart.parts();
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>gentle-request</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:gentle-request:1.0.2'
+compile 'com.iprogrammerr:gentle-request:1.0.3'
