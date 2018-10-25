@@ -2,51 +2,113 @@ package com.iprogrammerr.gentle.request;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.Consumer;
-
-import org.json.JSONObject;
 import org.junit.Test;
 
+import com.iprogrammerr.bright.server.method.DeleteMethod;
+import com.iprogrammerr.bright.server.method.GetMethod;
+import com.iprogrammerr.bright.server.method.HeadMethod;
+import com.iprogrammerr.bright.server.method.PostMethod;
+import com.iprogrammerr.bright.server.method.PutMethod;
+import com.iprogrammerr.bright.server.respondent.PotentialRespondent;
+import com.iprogrammerr.bright.server.respondent.Respondent;
+import com.iprogrammerr.bright.server.response.ContentResponse;
+import com.iprogrammerr.bright.server.response.template.BadRequestResponse;
+import com.iprogrammerr.bright.server.response.template.InternalServerErrorResponse;
+import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.gentle.request.exception.ToCatchException;
+import com.iprogrammerr.gentle.request.mock.MockedServer;
 
 public final class HttpRequestsTest {
-
-    private static final String BASE_URL = "https://jsonplaceholder.typicode.com/posts";
-    private final HttpRequests requests;
-
-    public HttpRequestsTest() {
-	this.requests = new HttpRequests();
-    }
 
     @Test
     public void shouldNotAcceptBadProtocols() {
 	ToCatchException toCatch = new ToCatchException();
-	String badProtocolUrl = BASE_URL.replace("http", "abc");
-	assertTrue(toCatch.hasCatched(() -> this.requests.getResponse(badProtocolUrl)));
-	assertTrue(toCatch.hasCatched(() -> this.requests.postResponse(badProtocolUrl, new byte[0])));
-	assertTrue(toCatch.hasCatched(() -> this.requests.putResponse(badProtocolUrl, new byte[0])));
-	assertTrue(toCatch.hasCatched(() -> this.requests.deleteResponse(badProtocolUrl)));
+	String badProtocolUrl = "https://jsonplaceholder.typicode.com/posts".replace("http", "abc");
+	Requests requests = new HttpRequests();
+	assertTrue(toCatch.hasCatched(() -> requests.getResponse(badProtocolUrl)));
+	assertTrue(toCatch.hasCatched(() -> requests.postResponse(badProtocolUrl, new byte[0])));
+	assertTrue(toCatch.hasCatched(() -> requests.putResponse(badProtocolUrl, new byte[0])));
+	assertTrue(toCatch.hasCatched(() -> requests.deleteResponse(badProtocolUrl)));
     }
 
     @Test
-    public void canRequest() throws Exception {
-	Consumer<Response> consumer = new Consumer<Response>() {
+    public void canHandleProperRequest() throws Exception {
+	int port = 8888;
+	String baseUrl = "http://localhost:" + port + "/";
+	String hello = "hello";
+	Respondent mirror = req -> new OkResponse(new String(req.body()));
+	try (MockedServer server = new MockedServer(port, new PotentialRespondent(hello, new GetMethod(), mirror),
+		new PotentialRespondent(hello, new PostMethod(), mirror),
+		new PotentialRespondent(hello, new PutMethod(), mirror),
+		new PotentialRespondent(hello, new DeleteMethod(), mirror),
+		new PotentialRespondent(hello, new HeadMethod(), mirror))) {
+	    server.start();
+	    Requests requests = new HttpRequests();
+	    String target = baseUrl + hello;
+	    assertTrue(requests.getResponse(target).hasProperCode());
+	    String body = "body";
+	    Response postResponse = requests.postResponse(target, body.getBytes());
+	    assertTrue(postResponse.hasProperCode());
+	    assertTrue(postResponse.body().stringValue().equals(body));
+	    assertTrue(requests.postResponse(target).hasProperCode());
+	    Response putResponse = requests.putResponse(target, body.getBytes());
+	    assertTrue(putResponse.body().stringValue().equals(body));
+	    assertTrue(putResponse.hasProperCode());
+	    assertTrue(requests.deleteResponse(target).hasProperCode());
+	    assertTrue(requests.methodResponse("HEAD", target).hasProperCode());
+	}
+    }
 
-	    @Override
-	    public void accept(Response response) {
-		assertTrue(response.hasProperCode());
-		assertTrue(response.body().value().length > 0);
-	    }
+    @Test
+    public void canReadErrors() throws Exception {
+	int port = 8888;
+	String baseUrl = "http://localhost:" + port + "/";
+	String error = "error";
+	Respondent badRespondent = req -> new BadRequestResponse(new String(req.body()));
+	Respondent internalErrorRespondent = req -> new InternalServerErrorResponse(new String(req.body()));
+	try (MockedServer server = new MockedServer(port,
+		new PotentialRespondent(error, new PostMethod(), badRespondent),
+		new PotentialRespondent(error, new PutMethod(), internalErrorRespondent))) {
+	    server.start();
+	    Requests requests = new HttpRequests();
+	    String target = baseUrl + error;
+	    String body = "body";
+	    Response postResponse = requests.postResponse(target, body.getBytes());
+	    assertTrue(postResponse.code() == 400);
+	    assertTrue(postResponse.body().stringValue().equals(body));
+	    Response putResponse = requests.putResponse(target, body.getBytes());
+	    assertTrue(putResponse.body().stringValue().equals(body));
+	    assertTrue(putResponse.code() == 500);
+	}
+    }
 
+    @Test
+    public void canReadRedirects() throws Exception {
+	int port = 8888;
+	String baseUrl = "http://localhost:" + port + "/";
+	String targetUrl = "target";
+	String message = "message";
+	int code = 303;
+	Respondent redirect = req -> {
+	    return new ContentResponse(code, message);
 	};
-	consumer.accept(this.requests.getResponse(BASE_URL));
-	JSONObject json = new JSONObject();
-	json.put("id", 44);
-	json.put("name", "super");
-	byte[] body = json.toString().getBytes();
-	consumer.accept(this.requests.postResponse(BASE_URL, body, new Header("Authorization", "Secret")));
-	consumer.accept(this.requests.putResponse(BASE_URL + "/1", body));
-	consumer.accept(this.requests.deleteResponse(BASE_URL + "/1"));
+	try (MockedServer server = new MockedServer(port, new PotentialRespondent(targetUrl, new GetMethod(), redirect),
+		new PotentialRespondent(targetUrl, new PostMethod(), redirect),
+		new PotentialRespondent(targetUrl, new PutMethod(), redirect),
+		new PotentialRespondent(targetUrl, new DeleteMethod(), redirect))) {
+	    server.start();
+	    Requests requests = new HttpRequests();
+	    String toHit = baseUrl + targetUrl;
+	    assertTrue(requests.getResponse(toHit).code() == code);
+	    String body = "body";
+	    Response postResponse = requests.postResponse(toHit, body.getBytes());
+	    assertTrue(postResponse.code() == code);
+	    assertTrue(postResponse.body().stringValue().equals(message));
+	    Response putResponse = requests.putResponse(toHit, body.getBytes());
+	    assertTrue(putResponse.code() == code);
+	    assertTrue(putResponse.body().stringValue().equals(message));
+	    assertTrue(requests.deleteResponse(toHit).code() == code);
+	}
     }
 
 }

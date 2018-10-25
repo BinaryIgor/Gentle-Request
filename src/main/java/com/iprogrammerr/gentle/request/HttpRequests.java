@@ -73,30 +73,34 @@ public final class HttpRequests implements Requests {
 
     private Response response(String url, String method, byte[] body, Header... headers) throws Exception {
 	HttpURLConnection connection = connection(url, method, body.length > 0 ? true : false, headers);
-	connection.connect();
-	if (body.length > 0) {
-	    BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
-	    os.write(body);
-	    os.close();
-	}
-	int code = connection.getResponseCode();
-	List<Header> responseHeaders = new ArrayList<>();
-	int bodySize = 0;
-	for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
-	    if (entry.getKey() == null) {
-		continue;
+	try {
+	    connection.connect();
+	    if (body.length > 0) {
+		BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
+		os.write(body);
+		os.close();
 	    }
-	    for (String value : entry.getValue()) {
-		Header header = new Header(entry.getKey(), value);
-		responseHeaders.add(header);
-		if (header.is(CONTENT_LENGTH)) {
-		    bodySize = bodySize(value);
+	    int code = connection.getResponseCode();
+	    List<Header> responseHeaders = new ArrayList<>();
+	    int bodySize = 0;
+	    for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+		if (entry.getKey() == null) {
+		    continue;
+		}
+		for (String value : entry.getValue()) {
+		    Header header = new Header(entry.getKey(), value);
+		    responseHeaders.add(header);
+		    if (header.is(CONTENT_LENGTH)) {
+			bodySize = bodySize(value);
+		    }
 		}
 	    }
+	    byte[] responseBody = body(code < 400 ? connection.getInputStream() : connection.getErrorStream(),
+		    bodySize);
+	    return new HttpResponse(code, responseHeaders, responseBody);
+	} finally {
+	    connection.disconnect();
 	}
-	byte[] responseBody = body(connection.getInputStream(), bodySize);
-	connection.disconnect();
-	return new HttpResponse(code, responseHeaders, responseBody);
     }
 
     private HttpURLConnection connection(String url, String method, boolean output, Header... headers)
@@ -106,6 +110,7 @@ public final class HttpRequests implements Requests {
 	connection.setDoOutput(output);
 	connection.setReadTimeout(this.readTimeout);
 	connection.setConnectTimeout(this.connectTimeout);
+	connection.setFollowRedirects(false);
 	for (Header h : headers) {
 	    connection.setRequestProperty(h.key(), h.value());
 	}
