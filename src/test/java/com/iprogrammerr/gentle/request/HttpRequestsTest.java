@@ -2,6 +2,8 @@ package com.iprogrammerr.gentle.request;
 
 import static org.junit.Assert.assertTrue;
 
+import java.net.ServerSocket;
+
 import org.junit.Test;
 
 import com.iprogrammerr.bright.server.method.DeleteMethod;
@@ -33,7 +35,7 @@ public final class HttpRequestsTest {
 
     @Test
     public void canHandleProperRequest() throws Exception {
-	int port = 8888;
+	int port = availablePort();
 	String baseUrl = "http://localhost:" + port + "/";
 	String hello = "hello";
 	Respondent mirror = req -> new OkResponse(new String(req.body()));
@@ -61,7 +63,7 @@ public final class HttpRequestsTest {
 
     @Test
     public void canReadErrors() throws Exception {
-	int port = 8888;
+	int port = availablePort();
 	String baseUrl = "http://localhost:" + port + "/";
 	String error = "error";
 	Respondent badRespondent = req -> new BadRequestResponse(new String(req.body()));
@@ -84,7 +86,7 @@ public final class HttpRequestsTest {
 
     @Test
     public void canReadRedirects() throws Exception {
-	int port = 8888;
+	int port = availablePort();
 	String baseUrl = "http://localhost:" + port + "/";
 	String targetUrl = "target";
 	String message = "message";
@@ -108,6 +110,12 @@ public final class HttpRequestsTest {
 	    assertTrue(putResponse.code() == code);
 	    assertTrue(putResponse.body().stringValue().equals(message));
 	    assertTrue(requests.deleteResponse(toHit).code() == code);
+	}
+    }
+
+    private int availablePort() throws Exception {
+	try (ServerSocket s = new ServerSocket(0)) {
+	    return s.getLocalPort();
 	}
     }
 
