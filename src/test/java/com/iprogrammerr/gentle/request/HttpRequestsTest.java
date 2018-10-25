@@ -2,6 +2,7 @@ package com.iprogrammerr.gentle.request;
 
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 
 import org.junit.Test;
@@ -36,7 +37,7 @@ public final class HttpRequestsTest {
     @Test
     public void canHandleProperRequest() throws Exception {
 	int port = availablePort();
-	String baseUrl = "http://localhost:" + port + "/";
+	String baseUrl = localHost(port);
 	String hello = "hello";
 	Respondent mirror = req -> new OkResponse(new String(req.body()));
 	try (MockedServer server = new MockedServer(port, new PotentialRespondent(hello, new GetMethod(), mirror),
@@ -64,7 +65,7 @@ public final class HttpRequestsTest {
     @Test
     public void canReadErrors() throws Exception {
 	int port = availablePort();
-	String baseUrl = "http://localhost:" + port + "/";
+	String baseUrl = localHost(port);
 	String error = "error";
 	Respondent badRespondent = req -> new BadRequestResponse(new String(req.body()));
 	Respondent internalErrorRespondent = req -> new InternalServerErrorResponse(new String(req.body()));
@@ -87,7 +88,7 @@ public final class HttpRequestsTest {
     @Test
     public void canReadRedirects() throws Exception {
 	int port = availablePort();
-	String baseUrl = "http://localhost:" + port + "/";
+	String baseUrl = localHost(port);
 	String targetUrl = "target";
 	String message = "message";
 	int code = 303;
@@ -117,6 +118,10 @@ public final class HttpRequestsTest {
 	try (ServerSocket s = new ServerSocket(0)) {
 	    return s.getLocalPort();
 	}
+    }
+
+    private String localHost(int port) throws Exception {
+	return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port + "/";
     }
 
 }
