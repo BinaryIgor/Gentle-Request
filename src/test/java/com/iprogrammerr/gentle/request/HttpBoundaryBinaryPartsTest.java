@@ -1,11 +1,13 @@
 package com.iprogrammerr.gentle.request;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
@@ -13,6 +15,7 @@ import com.iprogrammerr.gentle.request.mock.MockedBinary;
 import com.iprogrammerr.gentle.request.multipart.FormPart;
 import com.iprogrammerr.gentle.request.multipart.HttpFormPart;
 import com.iprogrammerr.gentle.request.multipart.HttpMultipartForm;
+import com.iprogrammerr.gentle.request.multipart.MultipartForm;
 
 public final class HttpBoundaryBinaryPartsTest {
 
@@ -23,11 +26,39 @@ public final class HttpBoundaryBinaryPartsTest {
 	parts.add(new HttpFormPart("secret2", "secret.png", "image/png", new MockedBinary().content()));
 	String boundary = "abcde6";
 	HttpMultipartForm multipartForm = new HttpMultipartForm(boundary, parts);
-	HttpBoundaryBinaryParts hbbp = new HttpBoundaryBinaryParts("--" + boundary);
-	List<byte[]> binaryParts = hbbp.parts(multipartForm.body());
-	assertTrue(binaryParts.size() == parts.size());
-	for (int i = 0; i < binaryParts.size(); i++) {
-	    assertTrue(Arrays.equals(parts.get(i).parsed(), binaryParts.get(i)));
+	assertThat(new HttpBoundaryBinaryParts("--" + boundary), new SplitableBinaryParts(multipartForm));
+    }
+
+    private final class SplitableBinaryParts extends TypeSafeMatcher<HttpBoundaryBinaryParts> {
+
+	private final MultipartForm toSplit;
+
+	public SplitableBinaryParts(MultipartForm toSplit) {
+	    this.toSplit = toSplit;
 	}
+
+	@Override
+	public void describeTo(Description description) {
+	    description.appendText(String.format("HttpBoundaryBinaryParts that has %d parts", toSplit.parts().size()));
+	}
+
+	@Override
+	protected boolean matchesSafely(HttpBoundaryBinaryParts item) {
+	    boolean matched = true;
+	    try {
+		List<FormPart> sourceParts = this.toSplit.parts();
+		List<byte[]> parts = item.parts(this.toSplit.body());
+		for (int i = 0; i < parts.size(); ++i) {
+		    if (!Arrays.equals(parts.get(i), sourceParts.get(i).parsed())) {
+			matched = false;
+			break;
+		    }
+		}
+	    } catch (Exception e) {
+		matched = false;
+	    }
+	    return matched;
+	}
+
     }
 }

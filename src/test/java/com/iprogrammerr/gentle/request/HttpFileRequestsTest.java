@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 import com.iprogrammerr.gentle.request.binary.PacketsBinary;
@@ -42,6 +44,30 @@ public final class HttpFileRequestsTest {
 	int contentLength = Integer.parseInt(response.header("Content-Length").value());
 	assertTrue(sent.length == contentLength);
 	assertTrue(Arrays.equals(sent, response.body().value()));
+    }
+
+    private final class SendingFilesRequests extends TypeSafeMatcher<FileRequests> {
+
+	private final Response response;
+	private final String fileType;
+
+	public SendingFilesRequests(Response response, String fileType) {
+	    this.response = response;
+	    this.fileType = fileType;
+	}
+
+	@Override
+	public void describeTo(Description description) {
+	    // TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected boolean matchesSafely(FileRequests item) {
+	    // TODO Auto-generated method stub
+	    return false;
+	}
+
     }
 
 }
