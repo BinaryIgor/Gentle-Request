@@ -1,11 +1,9 @@
 package com.iprogrammerr.gentle.request.matching;
 
-import java.util.concurrent.Callable;
-
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class ThrowsExceptions extends TypeSafeMatcher<Iterable<Callable<Object>>> {
+public final class FunctionsThatThrowsExceptions extends TypeSafeMatcher<Iterable<UnreliableFunction>> {
 
 	@Override
 	public void describeTo(Description description) {
@@ -13,11 +11,11 @@ public final class ThrowsExceptions extends TypeSafeMatcher<Iterable<Callable<Ob
 	}
 
 	@Override
-	protected boolean matchesSafely(Iterable<Callable<Object>> items) {
+	protected boolean matchesSafely(Iterable<UnreliableFunction> items) {
 		boolean matched = true;
-		for (Callable<Object> item : items) {
+		for (UnreliableFunction item : items) {
 			try {
-				item.call();
+				item.apply();
 				matched = false;
 			} catch (Exception e) {
 				matched = true;

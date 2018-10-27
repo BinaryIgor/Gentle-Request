@@ -27,19 +27,19 @@ import com.iprogrammerr.bright.server.response.template.InternalServerErrorRespo
 import com.iprogrammerr.bright.server.response.template.OkResponse;
 import com.iprogrammerr.gentle.request.mock.MockedServer;
 
-public final class RequestsThatAreResponding extends TypeSafeMatcher<Requests> {
+public final class RequestsThatAreSendingAndResponding extends TypeSafeMatcher<Requests> {
 
 	private static final String HEAD = "HEAD";
 	private static final String TRACE = "TRACE";
 	private final int port;
 
-	public RequestsThatAreResponding(int port) {
+	public RequestsThatAreSendingAndResponding(int port) {
 		this.port = port;
 	}
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("Requests that can handle various responses");
+		description.appendText(getClass().getSimpleName());
 	}
 
 	@Override

@@ -19,7 +19,6 @@ import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 public final class MockedServer implements AutoCloseable {
 
 	private final Initialization<Server> server;
-
 	private final Executor executor;
 
 	private MockedServer(Initialization<Server> server, Executor executor) {

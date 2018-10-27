@@ -1,11 +1,9 @@
 package com.iprogrammerr.gentle.request.matching;
 
-import java.util.concurrent.Callable;
-
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class ThrowsException<T> extends TypeSafeMatcher<Callable<T>> {
+public final class FunctionThatThrowsException extends TypeSafeMatcher<UnreliableFunction> {
 
 	@Override
 	public void describeTo(Description description) {
@@ -13,10 +11,10 @@ public final class ThrowsException<T> extends TypeSafeMatcher<Callable<T>> {
 	}
 
 	@Override
-	protected boolean matchesSafely(Callable<T> item) {
+	protected boolean matchesSafely(UnreliableFunction item) {
 		boolean thrown;
 		try {
-			item.call();
+			item.apply();
 			thrown = false;
 		} catch (Exception e) {
 			thrown = true;

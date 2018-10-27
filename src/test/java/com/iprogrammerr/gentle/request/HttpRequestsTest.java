@@ -5,18 +5,18 @@ import static org.junit.Assert.assertThat;
 import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import org.junit.Test;
 
-import com.iprogrammerr.gentle.request.matching.ThrowsExceptions;
+import com.iprogrammerr.gentle.request.matching.FunctionsThatThrowsExceptions;
+import com.iprogrammerr.gentle.request.matching.UnreliableFunction;
 
 public final class HttpRequestsTest {
 
 	@Test
-	public void canReadResponses() throws Exception {
+	public void canSendAndReceive() throws Exception {
 		int port = availablePort();
-		assertThat(new HttpRequests(), new RequestsThatAreResponding(port));
+		assertThat(new HttpRequests(), new RequestsThatAreSendingAndResponding(port));
 	}
 
 	private int availablePort() throws Exception {
@@ -29,13 +29,13 @@ public final class HttpRequestsTest {
 	public void shouldNotAcceptBadProtocols() {
 		String badProtocolUrl = "https://jsonplaceholder.typicode.com/posts".replace("http", "abc");
 		Requests requests = new HttpRequests();
-		List<Callable<Object>> callables = Arrays.asList(() -> requests.getResponse(badProtocolUrl),
+		List<UnreliableFunction> executables = Arrays.asList(
+				() -> requests.getResponse(badProtocolUrl),
 				() -> requests.postResponse(badProtocolUrl, new byte[0]),
-				() -> requests.postResponse(badProtocolUrl),
 				() -> requests.postResponse(badProtocolUrl),
 				() -> requests.putResponse(badProtocolUrl, new byte[0]),
 				() -> requests.deleteResponse(badProtocolUrl),
 				() -> requests.methodResponse("head", badProtocolUrl));
-		assertThat(callables, new ThrowsExceptions());
+		assertThat(executables, new FunctionsThatThrowsExceptions());
 	}
 }

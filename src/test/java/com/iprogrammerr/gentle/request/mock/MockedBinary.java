@@ -1,27 +1,26 @@
 package com.iprogrammerr.gentle.request.mock;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import com.iprogrammerr.bright.server.binary.Binary;
 
-public final class MockedBinary {
+public final class MockedBinary implements Binary {
 
-    private final InputStream source;
+	private final int min;
 
-    public MockedBinary(InputStream source) {
-	this.source = source;
-    }
-
-    public MockedBinary() {
-	this(MockedBinary.class.getResourceAsStream("/java.png"));
-    }
-
-    public byte[] content() throws Exception {
-	try (BufferedInputStream is = new BufferedInputStream(source)) {
-	    int available = is.available();
-	    byte[] content = new byte[available];
-	    is.read(content);
-	    return content;
+	public MockedBinary(int min) {
+		this.min = min;
 	}
-    }
+
+	public MockedBinary() {
+		this(1024);
+	}
+
+	@Override
+	public byte[] content() throws Exception {
+		byte[] bytes = new byte[this.min + (int) (Math.random() * 102_400)];
+		for (int i = 0; i < bytes.length; ++i) {
+			bytes[i] = (byte) (Byte.MIN_VALUE + (Math.random() * 2 * Byte.MAX_VALUE));
+		}
+		return bytes;
+	}
 
 }

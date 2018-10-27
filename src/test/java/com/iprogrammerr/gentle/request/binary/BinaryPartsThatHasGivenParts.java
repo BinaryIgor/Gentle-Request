@@ -34,8 +34,7 @@ public final class BinaryPartsThatHasGivenParts extends TypeSafeMatcher<BinaryPa
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(
-				String.format("BinaryParts that has parts from body of size %d", this.body.length));
+		description.appendText(getClass().getSimpleName());
 	}
 
 	@Override
