@@ -8,7 +8,7 @@ import java.util.Iterator;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import com.iprogrammerr.gentle.request.Header;
+import com.iprogrammerr.gentle.request.HttpHeader;
 
 public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<HttpMultipart> {
 
@@ -39,8 +39,8 @@ public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<
 		return matched;
 	}
 
-	private Header properHeader(String type, String boundary) {
-		return new Header("Content-Type",
+	private HttpHeader properHeader(String type, String boundary) {
+		return new HttpHeader("Content-Type",
 				String.format("multipart/%s; boundary=%s", type, boundary));
 	}
 

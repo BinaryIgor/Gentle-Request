@@ -2,7 +2,7 @@ package com.iprogrammerr.gentle.request.data;
 
 public interface KeyValue {
 
-    String key();
+	String key();
 
-    Object value();
+	Object value();
 }

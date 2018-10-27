@@ -3,7 +3,7 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.gentle.request.Header;
+import com.iprogrammerr.gentle.request.HttpHeader;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
 import com.iprogrammerr.gentle.request.initialization.HttpBoundary;
 import com.iprogrammerr.gentle.request.initialization.Initialization;
@@ -46,8 +46,8 @@ public final class HttpMultipart implements Multipart {
 	}
 
 	@Override
-	public Header header() {
-		return new Header("Content-Type",
+	public HttpHeader header() {
+		return new HttpHeader("Content-Type",
 				"multipart/" + this.type + "; boundary=" + this.boundary.value());
 	}
 

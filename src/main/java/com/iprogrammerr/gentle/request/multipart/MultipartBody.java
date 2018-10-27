@@ -1,5 +1,5 @@
 package com.iprogrammerr.gentle.request.multipart;
 
 public interface MultipartBody {
-    byte[] content() throws Exception;
+	byte[] content() throws Exception;
 }

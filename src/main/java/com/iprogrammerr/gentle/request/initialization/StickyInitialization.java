@@ -16,5 +16,4 @@ public final class StickyInitialization<T> implements Initialization<T> {
 		}
 		return this.value;
 	}
-
 }

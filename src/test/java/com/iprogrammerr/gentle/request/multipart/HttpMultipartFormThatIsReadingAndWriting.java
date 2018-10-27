@@ -8,7 +8,7 @@ import java.util.Iterator;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-import com.iprogrammerr.gentle.request.Header;
+import com.iprogrammerr.gentle.request.HttpHeader;
 
 public final class HttpMultipartFormThatIsReadingAndWriting extends TypeSafeMatcher<HttpMultipartForm> {
 
@@ -31,8 +31,8 @@ public final class HttpMultipartFormThatIsReadingAndWriting extends TypeSafeMatc
 		return matched;
 	}
 
-	private Header properHeader(String boundary) {
-		return new Header("Content-Type", "multipart/form-data; boundary=" + boundary);
+	private HttpHeader properHeader(String boundary) {
+		return new HttpHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
 	}
 
 	private void partsShouldBeEqual(Iterator<FormPart> first, Iterator<FormPart> second)

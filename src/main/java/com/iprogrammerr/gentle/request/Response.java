@@ -6,15 +6,15 @@ import com.iprogrammerr.gentle.request.binary.SmartBinary;
 
 public interface Response {
 
-    int code();
+	int code();
 
-    boolean hasProperCode();
+	boolean hasProperCode();
 
-    List<Header> headers();
+	List<HttpHeader> headers();
 
-    boolean hasHeader(String key);
+	boolean hasHeader(String key);
 
-    Header header(String key) throws Exception;
+	HttpHeader header(String key) throws Exception;
 
-    SmartBinary body();
+	SmartBinary body();
 }

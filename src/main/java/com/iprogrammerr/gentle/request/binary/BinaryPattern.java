@@ -2,7 +2,7 @@ package com.iprogrammerr.gentle.request.binary;
 
 public interface BinaryPattern {
 
-    byte[] value();
+	byte[] value();
 
-    int index(byte[] content);
+	int index(byte[] content);
 }

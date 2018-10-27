@@ -4,9 +4,9 @@ import org.json.JSONObject;
 
 public interface SmartBinary {
 
-    byte[] value();
+	byte[] value();
 
-    String stringValue();
+	String stringValue();
 
-    JSONObject jsonValue();
+	JSONObject jsonValue();
 }

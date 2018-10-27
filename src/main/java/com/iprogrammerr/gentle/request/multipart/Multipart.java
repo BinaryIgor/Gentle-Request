@@ -2,11 +2,11 @@ package com.iprogrammerr.gentle.request.multipart;
 
 import java.util.List;
 
-import com.iprogrammerr.gentle.request.Header;
+import com.iprogrammerr.gentle.request.HttpHeader;
 
 public interface Multipart {
 
-	Header header();
+	HttpHeader header();
 
 	String boundary();
 
