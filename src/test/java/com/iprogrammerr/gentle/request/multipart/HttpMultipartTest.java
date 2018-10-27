@@ -14,11 +14,10 @@ public final class HttpMultipartTest {
 
 	@Test
 	public void canReadAndWriteSingle() throws Exception {
-		String boundary = "abcde";
 		String type = "mixed";
-		HttpMultipart multipart = new HttpMultipart(type, boundary,
+		HttpMultipart multipart = new HttpMultipart(type,
 				Collections.singletonList(new HttpPart("test")));
-		assertThat(multipart, new HttpMultipartThatIsReadingAndWriting(type, boundary));
+		assertThat(multipart, new HttpMultipartThatIsReadingAndWriting(type));
 	}
 
 	@Test
@@ -26,9 +25,7 @@ public final class HttpMultipartTest {
 		List<Part> parts = new ArrayList<>();
 		parts.add(new HttpPart("application/json", "{\"secret\":true}".getBytes()));
 		parts.add(new HttpPart("image/png", new MockedBinary().content()));
-		String boundary = "2ddd55g";
 		String type = "alternative";
-		assertThat(new HttpMultipart(type, boundary, parts),
-				new HttpMultipartThatIsReadingAndWriting(type, boundary));
+		assertThat(new HttpMultipart(type, parts), new HttpMultipartThatIsReadingAndWriting(type));
 	}
 }

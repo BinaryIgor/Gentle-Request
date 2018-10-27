@@ -20,9 +20,8 @@ public final class HttpBoundaryBinaryPartsTest {
 		parts.add(new HttpFormPart("secret", "secret"));
 		parts.add(new HttpFormPart("secret2", "secret.png", "image/png",
 				new MockedBinary().content()));
-		String boundary = "abcde6";
-		HttpMultipartForm multipartForm = new HttpMultipartForm(boundary, parts);
-		assertThat(new HttpBoundaryBinaryParts("--" + boundary),
-				new BinaryPartsThatHasGivenParts(multipartForm.body(), multipartForm.parts()));
+		HttpMultipartForm form = new HttpMultipartForm(parts);
+		assertThat(new HttpBoundaryBinaryParts("--" + form.boundary()),
+				new BinaryPartsThatHasGivenParts(form.body(), form.parts()));
 	}
 }

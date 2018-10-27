@@ -13,11 +13,9 @@ import com.iprogrammerr.gentle.request.Header;
 public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<HttpMultipart> {
 
 	private final String type;
-	private final String boundary;
 
-	public HttpMultipartThatIsReadingAndWriting(String type, String boundary) {
+	public HttpMultipartThatIsReadingAndWriting(String type) {
 		this.type = type;
-		this.boundary = boundary;
 	}
 
 	@Override
@@ -29,8 +27,8 @@ public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<
 	protected boolean matchesSafely(HttpMultipart item) {
 		boolean matched;
 		try {
-			assertTrue(item.header().equals(properHeader(this.type, this.boundary)));
-			HttpMultipart parsed = new HttpMultipart(this.type, this.boundary, item.body());
+			assertTrue(item.header().equals(properHeader(this.type, item.boundary())));
+			HttpMultipart parsed = new HttpMultipart(this.type, item.boundary(), item.body());
 			assertTrue(item.header().equals(parsed.header()));
 			partsShouldBeEqual(item.parts().iterator(), parsed.parts().iterator());
 			matched = true;

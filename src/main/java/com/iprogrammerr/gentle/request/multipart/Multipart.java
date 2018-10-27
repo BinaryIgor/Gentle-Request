@@ -6,9 +6,11 @@ import com.iprogrammerr.gentle.request.Header;
 
 public interface Multipart {
 
-    Header header();
+	Header header();
 
-    List<Part> parts();
+	String boundary();
 
-    byte[] body() throws Exception;
+	List<Part> parts();
+
+	byte[] body() throws Exception;
 }

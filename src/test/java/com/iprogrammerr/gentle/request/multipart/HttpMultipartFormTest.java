@@ -14,11 +14,9 @@ public final class HttpMultipartFormTest {
 
 	@Test
 	public void canReadAndWriteSingle() throws Exception {
-		String boundary = "abcde";
 		assertThat(
-				new HttpMultipartForm(boundary,
-						Collections.singletonList(new HttpFormPart("test", "test"))),
-				new HttpMultipartFormThatIsReadingAndWriting(boundary));
+				new HttpMultipartForm(Collections.singletonList(new HttpFormPart("test", "test"))),
+				new HttpMultipartFormThatIsReadingAndWriting());
 	}
 
 	@Test
@@ -27,8 +25,6 @@ public final class HttpMultipartFormTest {
 		parts.add(new HttpFormPart("json", "json.json", "application/json",
 				"{\"secret\": true}".getBytes()));
 		parts.add(new HttpFormPart("image", "java.png", "image/png", new MockedBinary().content()));
-		String boundary = "2ddd55g";
-		assertThat(new HttpMultipartForm(boundary, parts),
-				new HttpMultipartFormThatIsReadingAndWriting(boundary));
+		assertThat(new HttpMultipartForm(parts), new HttpMultipartFormThatIsReadingAndWriting());
 	}
 }

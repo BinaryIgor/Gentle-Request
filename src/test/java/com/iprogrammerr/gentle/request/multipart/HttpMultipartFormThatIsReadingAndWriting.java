@@ -12,12 +12,6 @@ import com.iprogrammerr.gentle.request.Header;
 
 public final class HttpMultipartFormThatIsReadingAndWriting extends TypeSafeMatcher<HttpMultipartForm> {
 
-	private final String boundary;
-
-	public HttpMultipartFormThatIsReadingAndWriting(String boundary) {
-		this.boundary = boundary;
-	}
-
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(getClass().getSimpleName());
@@ -27,8 +21,8 @@ public final class HttpMultipartFormThatIsReadingAndWriting extends TypeSafeMatc
 	protected boolean matchesSafely(HttpMultipartForm item) {
 		boolean matched;
 		try {
-			assertTrue(item.header().equals(properHeader(this.boundary)));
-			HttpMultipartForm parsed = new HttpMultipartForm(this.boundary, item.body());
+			assertTrue(item.header().equals(properHeader(item.boundary())));
+			HttpMultipartForm parsed = new HttpMultipartForm(item.boundary(), item.body());
 			partsShouldBeEqual(item.parts().iterator(), parsed.parts().iterator());
 			matched = true;
 		} catch (Exception e) {

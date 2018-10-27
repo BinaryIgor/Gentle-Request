@@ -2,6 +2,7 @@ package com.iprogrammerr.gentle.request;
 
 import static org.junit.Assert.assertThat;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,6 @@ public final class RequestsThatAreSendingAndResponding extends TypeSafeMatcher<R
 
 	@Override
 	protected boolean matchesSafely(Requests item) {
-		String baseUrl = "http://localhost:" + this.port + "/";
 		Map<String, Respondent> urlsRespondents = new HashMap<>();
 		Respondent okMirror = req -> new OkResponse(new String(req.body()));
 		String okUrl = "ok";
@@ -67,6 +67,7 @@ public final class RequestsThatAreSendingAndResponding extends TypeSafeMatcher<R
 				methodsRespondents(urlsRespondents, methods))) {
 			server.start();
 			matched = true;
+			String baseUrl = baseUrl(this.port);
 			matchMethods(200, baseUrl + okUrl, item, HEAD, TRACE);
 			matchMethods(303, baseUrl + notModifiedUrl, item, HEAD, TRACE);
 			matchMethods(400, baseUrl + badRequestUrl, item, HEAD, TRACE);
@@ -107,6 +108,10 @@ public final class RequestsThatAreSendingAndResponding extends TypeSafeMatcher<R
 			}
 		}
 		return respondents;
+	}
+
+	private String baseUrl(int port) throws Exception {
+		return "http://" + InetAddress.getLocalHost().getHostAddress() + ":" + port + "/";
 	}
 
 }
