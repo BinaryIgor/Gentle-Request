@@ -29,7 +29,6 @@ public final class HttpFormPartThatIsReadingAndWriting extends TypeSafeMatcher<H
 	@Override
 	public void describeTo(Description description) {
 		description.appendText(getClass().getSimpleName());
-
 	}
 
 	@Override

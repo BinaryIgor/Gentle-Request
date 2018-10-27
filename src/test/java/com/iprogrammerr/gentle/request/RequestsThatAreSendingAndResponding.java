@@ -66,7 +66,6 @@ public final class RequestsThatAreSendingAndResponding extends TypeSafeMatcher<R
 		try (MockedServer server = new MockedServer(this.port,
 				methodsRespondents(urlsRespondents, methods))) {
 			server.start();
-			System.out.println("Started!");
 			matched = true;
 			String baseUrl = baseUrl(this.port);
 			matchMethods(200, baseUrl + okUrl, item, HEAD, TRACE);

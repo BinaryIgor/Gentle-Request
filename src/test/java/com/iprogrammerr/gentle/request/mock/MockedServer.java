@@ -1,9 +1,8 @@
 package com.iprogrammerr.gentle.request.mock;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.iprogrammerr.bright.server.Connection;
 import com.iprogrammerr.bright.server.RequestResponseConnection;
@@ -20,9 +19,9 @@ import com.iprogrammerr.bright.server.respondent.ConditionalRespondent;
 public final class MockedServer implements AutoCloseable {
 
 	private final Initialization<Server> server;
-	private final ExecutorService executor;
+	private final Executor executor;
 
-	private MockedServer(Initialization<Server> server, ExecutorService executor) {
+	private MockedServer(Initialization<Server> server, Executor executor) {
 		this.server = server;
 		this.executor = executor;
 	}
@@ -38,14 +37,17 @@ public final class MockedServer implements AutoCloseable {
 	}
 
 	public void start() throws Exception {
+		Server server = this.server.value();
 		this.executor.execute(() -> {
 			try {
-				this.server.value().start();
+				server.start();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
-		this.executor.awaitTermination(5, TimeUnit.SECONDS);
+		do {
+			Thread.sleep(10);
+		} while (!server.isRunning());
 	}
 
 	@Override
