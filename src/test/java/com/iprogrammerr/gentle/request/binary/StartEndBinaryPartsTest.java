@@ -17,7 +17,7 @@ public final class StartEndBinaryPartsTest {
 		byte[] start = "start".getBytes();
 		byte[] end = "end".getBytes();
 		List<byte[]> parts = new ArrayList<>();
-		MockedBinary binary = new MockedBinary(1_000, 100_000);
+		MockedBinary binary = new MockedBinary(100, 10_000);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		int size = 1 + (int) (Math.random() * 10);
 		for (int i = 0; i < size; ++i) {
