@@ -40,7 +40,7 @@ public final class HttpResponse implements Response {
 	}
 
 	@Override
-	public boolean hasProperCode() {
+	public boolean hasSuccessCode() {
 		return this.code >= 200 && this.code < 300;
 	}
 

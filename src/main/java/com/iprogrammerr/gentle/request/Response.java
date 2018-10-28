@@ -8,7 +8,7 @@ public interface Response {
 
 	int code();
 
-	boolean hasProperCode();
+	boolean hasSuccessCode();
 
 	List<Header> headers();
 
