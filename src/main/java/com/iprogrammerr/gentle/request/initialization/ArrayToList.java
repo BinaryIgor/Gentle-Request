@@ -17,7 +17,7 @@ public final class ArrayToList<T> implements Initialization<List<T>> {
 
 	@Override
 	public List<T> value() {
-		List<T> list = new ArrayList<>();
+		List<T> list = new ArrayList<>(this.base.length + this.toAppend.length);
 		list.addAll(Arrays.asList(this.base));
 		list.addAll(Arrays.asList(this.toAppend));
 		return list;

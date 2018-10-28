@@ -16,10 +16,12 @@ import com.iprogrammerr.gentle.request.multipart.Multipart;
 import com.iprogrammerr.gentle.request.multipart.MultipartForm;
 import com.iprogrammerr.gentle.request.template.ContentLengthHeader;
 import com.iprogrammerr.gentle.request.template.ContentTypeHeader;
-import com.iprogrammerr.gentle.request.template.JsonContentTypeHeader;
 
 public final class FilledRequest implements Request {
 
+	private static final String FORM_URL_ENCODED = "application/x-www-form-urlencoded";
+	private static final String TEXT_PLAIN = "text/plain";
+	private static final String JSON = "application/json";
 	private final String method;
 	private final String url;
 	private final Initialization<List<Header>> headers;
@@ -62,7 +64,7 @@ public final class FilledRequest implements Request {
 	}
 
 	public FilledRequest(String method, String url, List<Header> headers, byte[] body) {
-		this(method, url, headers, "application/x-www-form-urlencoded", () -> body);
+		this(method, url, headers, FORM_URL_ENCODED, () -> body);
 	}
 
 	public FilledRequest(String method, String url, byte[] body, Header... headers) {
@@ -70,7 +72,7 @@ public final class FilledRequest implements Request {
 	}
 
 	public FilledRequest(String method, String url, List<Header> headers, String body) {
-		this(method, url, headers, new ContentTypeHeader("text/plain"),
+		this(method, url, headers, new ContentTypeHeader(TEXT_PLAIN),
 				new UnreliableStickyInitialization<>(() -> body.getBytes()));
 	}
 
@@ -79,7 +81,7 @@ public final class FilledRequest implements Request {
 	}
 
 	public FilledRequest(String method, String url, List<Header> headers, JSONObject body) {
-		this(method, url, headers, new JsonContentTypeHeader(),
+		this(method, url, headers, new ContentTypeHeader(JSON),
 				new UnreliableStickyInitialization<>(() -> body.toString().getBytes()));
 	}
 

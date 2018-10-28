@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
+import com.iprogrammerr.gentle.request.initialization.ArrayToList;
 import com.iprogrammerr.gentle.request.initialization.HttpBoundary;
 import com.iprogrammerr.gentle.request.initialization.Initialization;
 import com.iprogrammerr.gentle.request.initialization.StickyInitialization;
@@ -15,33 +16,39 @@ public final class HttpMultipartForm implements MultipartForm {
 	private static final String TWO_HYPHENS = "--";
 	private final Initialization<String> boundary;
 	private byte[] parsed;
-	private final List<FormPart> parts;
+	private final Initialization<List<FormPart>> parts;
 
 	private HttpMultipartForm(Initialization<String> boundary, byte[] parsed,
-			List<FormPart> parts) {
+			Initialization<List<FormPart>> parts) {
 		this.boundary = boundary;
 		this.parsed = parsed;
 		this.parts = parts;
 	}
 
 	public HttpMultipartForm(String boundary, byte[] parsed) {
-		this(new StickyInitialization<>(() -> boundary), parsed, new ArrayList<>());
+		this(new StickyInitialization<>(() -> boundary), parsed, new StickyInitialization<>(() -> {
+			List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary)
+					.parts(parsed);
+			List<FormPart> parts = new ArrayList<>(rawParts.size());
+			for (byte[] rp : rawParts) {
+				parts.add(new HttpFormPart(rp));
+			}
+			return parts;
+		}));
 	}
 
 	public HttpMultipartForm(List<FormPart> parts) {
-		this(new StickyInitialization<>(new HttpBoundary()), new byte[0], parts);
+		this(new StickyInitialization<>(new HttpBoundary()), new byte[0], () -> parts);
+	}
+
+	public HttpMultipartForm(FormPart part, FormPart... parts) {
+		this(new StickyInitialization<>(new HttpBoundary()), new byte[0],
+				new StickyInitialization<>(new ArrayToList<>(parts, part)));
 	}
 
 	@Override
 	public List<FormPart> parts() {
-		if (this.parts.isEmpty()) {
-			List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary.value())
-					.parts(this.parsed);
-			for (byte[] part : parts) {
-				this.parts.add(new HttpFormPart(part));
-			}
-		}
-		return this.parts;
+		return this.parts.value();
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public final class HttpMultipartForm implements MultipartForm {
 	public byte[] body() throws Exception {
 		if (this.parsed.length < 1) {
 			this.parsed = new HttpMultipartBody(this.boundary.value(),
-					this.parts.toArray(new FormPart[this.parts.size()])).content();
+					this.parts.value().toArray(new FormPart[this.parts.value().size()])).content();
 		}
 		return this.parsed;
 	}

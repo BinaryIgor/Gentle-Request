@@ -20,5 +20,4 @@ public final class FileContent implements UnreliableInitialization<byte[]> {
 			return new PacketsBinary(is, this.source.length()).content();
 		}
 	}
-
 }

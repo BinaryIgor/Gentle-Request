@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
+import com.iprogrammerr.gentle.request.initialization.ArrayToList;
 import com.iprogrammerr.gentle.request.initialization.HttpBoundary;
 import com.iprogrammerr.gentle.request.initialization.Initialization;
 import com.iprogrammerr.gentle.request.initialization.StickyInitialization;
@@ -16,10 +17,10 @@ public final class HttpMultipart implements Multipart {
 	private final String type;
 	private final Initialization<String> boundary;
 	private byte[] parsed;
-	private final List<Part> parts;
+	private final Initialization<List<Part>> parts;
 
 	private HttpMultipart(String type, Initialization<String> boundary, byte[] parsed,
-			List<Part> parts) {
+			Initialization<List<Part>> parts) {
 		this.type = type;
 		this.boundary = boundary;
 		this.parsed = parsed;
@@ -27,23 +28,30 @@ public final class HttpMultipart implements Multipart {
 	}
 
 	public HttpMultipart(String type, String boundary, byte[] parsed) {
-		this(type, new StickyInitialization<>(() -> boundary), parsed, new ArrayList<>());
+		this(type, new StickyInitialization<>(() -> boundary), parsed,
+				new StickyInitialization<>(() -> {
+					List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary)
+							.parts(parsed);
+					List<Part> parts = new ArrayList<>(rawParts.size());
+					for (byte[] p : rawParts) {
+						parts.add(new HttpPart(p));
+					}
+					return parts;
+				}));
 	}
 
 	public HttpMultipart(String type, List<Part> parts) {
-		this(type, new StickyInitialization<>(new HttpBoundary()), new byte[0], parts);
+		this(type, new StickyInitialization<>(new HttpBoundary()), new byte[0], () -> parts);
+	}
+
+	public HttpMultipart(String type, Part part, Part... parts) {
+		this(type, new StickyInitialization<>(new HttpBoundary()), new byte[0],
+				new StickyInitialization<>(new ArrayToList<>(parts, part)));
 	}
 
 	@Override
 	public List<Part> parts() {
-		if (this.parts.isEmpty()) {
-			List<byte[]> parts = new HttpBoundaryBinaryParts(TWO_HYPHENS + this.boundary.value())
-					.parts(this.parsed);
-			for (byte[] part : parts) {
-				this.parts.add(new HttpPart(part));
-			}
-		}
-		return this.parts;
+		return this.parts.value();
 	}
 
 	@Override
@@ -55,7 +63,7 @@ public final class HttpMultipart implements Multipart {
 	public byte[] body() throws Exception {
 		if (this.parsed.length < 1) {
 			this.parsed = new HttpMultipartBody(this.boundary.value(),
-					this.parts.toArray(new Part[this.parts.size()])).content();
+					this.parts.value().toArray(new Part[this.parts.value().size()])).content();
 		}
 		return this.parsed;
 	}
@@ -64,5 +72,4 @@ public final class HttpMultipart implements Multipart {
 	public String boundary() {
 		return this.boundary.value();
 	}
-
 }
