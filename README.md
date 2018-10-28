@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/Iprogrammerr/Gentle-Request.svg?branch=master)](https://travis-ci.com/Iprogrammerr/Gentle-Request)
-[![Test Coverage](https://img.shields.io/codecov/c/github/iprogrammerr/gentle-request.svg)](https://codecov.io/gh/Iprogrammerr/Gentle-Request/branch/master)
+[![Build Status](https://travis-ci.com/Iprogrammerr/Gentle-Request.svg?branch=development)](https://travis-ci.com/Iprogrammerr/Gentle-Request)
+[![Test Coverage](https://img.shields.io/codecov/c/github/iprogrammerr/gentle-request/development.svg)](https://codecov.io/gh/Iprogrammerr/Gentle-Request/branch/master)
 # Gentle-Request
 * *get*, *delete*, *{ method }*
 ```java
