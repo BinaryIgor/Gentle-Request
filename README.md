@@ -75,9 +75,9 @@ try {
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>gentle-request</artifactId>
-  <version>1.0.3</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:gentle-request:1.0.3'
+compile 'com.iprogrammerr:gentle-request:2.0.0'
