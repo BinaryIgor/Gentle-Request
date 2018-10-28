@@ -8,5 +8,5 @@ public interface SmartBinary {
 
 	String stringValue();
 
-	JSONObject jsonValue();
+	JSONObject jsonValue() throws Exception;
 }

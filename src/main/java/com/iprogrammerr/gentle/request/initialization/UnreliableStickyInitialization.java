@@ -16,5 +16,4 @@ public final class UnreliableStickyInitialization<T> implements UnreliableInitia
 		}
 		return this.value;
 	}
-
 }

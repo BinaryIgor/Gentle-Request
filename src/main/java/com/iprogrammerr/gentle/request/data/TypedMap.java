@@ -27,5 +27,4 @@ public interface TypedMap {
 	boolean isEmpty();
 
 	int size();
-
 }

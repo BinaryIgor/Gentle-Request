@@ -37,5 +37,4 @@ public final class OnePacketBinary implements Binary {
 		}
 		return readBytes;
 	}
-
 }

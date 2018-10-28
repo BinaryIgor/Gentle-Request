@@ -1,15 +1,16 @@
 package com.iprogrammerr.gentle.request.multipart;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public final class HttpMultipartBody implements MultipartBody {
 
 	private static final String TWO_HYPHENS = "--";
 	private static final String CRLF = "\r\n";
 	private final String boundary;
-	private final Part[] parts;
+	private final List<? extends Part> parts;
 
-	public HttpMultipartBody(String boundary, Part... parts) {
+	public HttpMultipartBody(String boundary, List<? extends Part> parts) {
 		this.boundary = boundary;
 		this.parts = parts;
 	}
@@ -20,11 +21,11 @@ public final class HttpMultipartBody implements MultipartBody {
 		String boundary = TWO_HYPHENS + this.boundary;
 		baos.write(boundary.getBytes());
 		baos.write(CRLF.getBytes());
-		for (int i = 0; i < this.parts.length; i++) {
-			baos.write(this.parts[i].parsed());
+		for (int i = 0; i < this.parts.size(); i++) {
+			baos.write(this.parts.get(i).parsed());
 			baos.write(CRLF.getBytes());
 			baos.write(boundary.getBytes());
-			if (i == (this.parts.length - 1)) {
+			if (i == (this.parts.size() - 1)) {
 				baos.write(TWO_HYPHENS.getBytes());
 			} else {
 				baos.write(CRLF.getBytes());
@@ -40,5 +41,4 @@ public final class HttpMultipartBody implements MultipartBody {
 		}
 		return size;
 	}
-
 }

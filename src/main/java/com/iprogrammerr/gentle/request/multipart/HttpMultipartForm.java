@@ -59,8 +59,8 @@ public final class HttpMultipartForm implements MultipartForm {
 	@Override
 	public byte[] body() throws Exception {
 		if (this.parsed.length < 1) {
-			this.parsed = new HttpMultipartBody(this.boundary.value(),
-					this.parts.value().toArray(new FormPart[this.parts.value().size()])).content();
+			this.parsed = new HttpMultipartBody(this.boundary.value(), this.parts.value())
+					.content();
 		}
 		return this.parsed;
 	}

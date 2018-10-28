@@ -34,5 +34,4 @@ public final class ConfigurablePattern implements BinaryPattern {
 	public byte[] value() {
 		return this.pattern;
 	}
-
 }

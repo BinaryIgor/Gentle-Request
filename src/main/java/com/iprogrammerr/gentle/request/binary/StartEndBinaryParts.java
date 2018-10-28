@@ -55,5 +55,4 @@ public final class StartEndBinaryParts implements BinaryParts {
 		byte[] part = baos.toByteArray();
 		return part;
 	}
-
 }

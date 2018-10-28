@@ -62,8 +62,8 @@ public final class HttpMultipart implements Multipart {
 	@Override
 	public byte[] body() throws Exception {
 		if (this.parsed.length < 1) {
-			this.parsed = new HttpMultipartBody(this.boundary.value(),
-					this.parts.value().toArray(new Part[this.parts.value().size()])).content();
+			this.parsed = new HttpMultipartBody(this.boundary.value(), this.parts.value())
+					.content();
 		}
 		return this.parsed;
 	}

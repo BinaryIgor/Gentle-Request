@@ -4,6 +4,10 @@ import java.nio.charset.StandardCharsets;
 
 public final class HttpBoundary implements Initialization<String> {
 
+	private static final int ASCII_0 = 48;
+	private static final int ASCII_UPPER_CASE_A = 65;
+	private static final int ASCII_LOWER_CASE_A = 97;
+
 	@Override
 	public String value() {
 		int length = 25 + (int) (Math.random() * 45);
@@ -18,13 +22,12 @@ public final class HttpBoundary implements Initialization<String> {
 		double type = Math.random();
 		byte random;
 		if (type <= 0.33) {
-			random = (byte) (48 + (int) (Math.random() * 10));
+			random = (byte) (ASCII_0 + (int) (Math.random() * 10));
 		} else if (type <= 0.66) {
-			random = (byte) (65 + (int) (Math.random() * 26));
+			random = (byte) (ASCII_UPPER_CASE_A + (int) (Math.random() * 26));
 		} else {
-			random = (byte) (97 + (int) (Math.random() * 26));
+			random = (byte) (ASCII_LOWER_CASE_A + (int) (Math.random() * 26));
 		}
 		return random;
 	}
-
 }

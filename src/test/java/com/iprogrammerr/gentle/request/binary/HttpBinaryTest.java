@@ -12,11 +12,11 @@ public final class HttpBinaryTest {
 		String name = "super";
 		JSONObject json = new JSONObject();
 		json.put("name", name);
-		assertThat(new HttpBinary(json.toString().getBytes()), new BinaryThatContainsJson(json));
+		assertThat(new HttpBinary(json.toString().getBytes()), new SmartBinaryThatContainsJson(json));
 	}
 
 	@Test
 	public void canBeEmpty() throws Exception {
-		assertThat(new HttpBinary(new byte[0]), new BinaryThatIsEmpty());
+		assertThat(new HttpBinary(new byte[0]), new SmartBinaryThatIsEmpty());
 	}
 }

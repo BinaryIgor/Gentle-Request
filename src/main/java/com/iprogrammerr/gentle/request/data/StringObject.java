@@ -23,5 +23,4 @@ public final class StringObject implements KeyValue {
 	public void revalue(Object value) {
 		this.value = value;
 	}
-
 }

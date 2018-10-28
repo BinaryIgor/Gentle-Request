@@ -28,5 +28,4 @@ public final class PacketsBinary implements Binary {
 		}
 		return baos.toByteArray();
 	}
-
 }

@@ -21,5 +21,4 @@ public final class HeadBodyPattern implements BinaryPattern {
 	public int index(byte[] content) {
 		return this.base.index(content);
 	}
-
 }

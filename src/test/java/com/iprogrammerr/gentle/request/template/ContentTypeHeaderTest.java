@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.HeaderThatContainsValues;
 
 public final class ContentTypeHeaderTest {
@@ -16,6 +17,14 @@ public final class ContentTypeHeaderTest {
 		String type = "application/json";
 		assertThat(new ContentTypeHeader(type),
 				new HeaderThatContainsValues(KEY.toLowerCase(), type));
+	}
+
+	@Test
+	public void canHaveProperAdditonalValues() {
+		String type = "text/html";
+		String additional = "charset=ISO-8859-2";
+		Header header = new ContentTypeHeader(type, additional);
+		assertThat(header, new HeaderThatContainsValues(KEY.toLowerCase(), header.value()));
 	}
 
 	@Test

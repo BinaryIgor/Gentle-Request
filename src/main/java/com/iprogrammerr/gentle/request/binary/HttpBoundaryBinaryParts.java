@@ -25,5 +25,4 @@ public class HttpBoundaryBinaryParts implements BinaryParts {
 		}
 		return parts;
 	}
-
 }

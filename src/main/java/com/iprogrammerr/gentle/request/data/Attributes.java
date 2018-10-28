@@ -108,5 +108,4 @@ public final class Attributes implements TypedMap {
 	public int size() {
 		return this.values.size();
 	}
-
 }
