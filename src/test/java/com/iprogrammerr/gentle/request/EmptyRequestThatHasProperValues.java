@@ -9,7 +9,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class EmptyRequestThatHasProperValues extends TypeSafeMatcher<EmptyRequest> {
+public final class EmptyRequestThatHasProperValues extends TypeSafeMatcher<Request> {
 
 	private final String method;
 	private final String url;
@@ -31,12 +31,19 @@ public final class EmptyRequestThatHasProperValues extends TypeSafeMatcher<Empty
 	}
 
 	@Override
-	protected boolean matchesSafely(EmptyRequest item) {
+	protected boolean matchesSafely(Request item) {
 		assertThat(this.method, Matchers.equalToIgnoringCase(item.method()));
 		assertThat(this.url, Matchers.equalTo(item.url()));
 		assertThat(this.headers, Matchers
 				.containsInAnyOrder(item.headers().toArray(new Header[item.headers().size()])));
-		return true;
+		boolean matched;
+		try {
+			assertThat(item.body().length, Matchers.equalTo(0));
+			matched = true;
+		} catch (Exception e) {
+			matched = false;
+		}
+		return matched;
 	}
 
 }

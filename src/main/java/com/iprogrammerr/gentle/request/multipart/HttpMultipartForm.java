@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
-import com.iprogrammerr.gentle.request.initialization.ArrayToList;
+import com.iprogrammerr.gentle.request.initialization.ArraysToList;
 import com.iprogrammerr.gentle.request.initialization.HttpBoundary;
 import com.iprogrammerr.gentle.request.initialization.Initialization;
 import com.iprogrammerr.gentle.request.initialization.StickyInitialization;
@@ -43,7 +43,7 @@ public final class HttpMultipartForm implements MultipartForm {
 
 	public HttpMultipartForm(FormPart part, FormPart... parts) {
 		this(new StickyInitialization<>(new HttpBoundary()), new byte[0],
-				new StickyInitialization<>(new ArrayToList<>(parts, part)));
+				new StickyInitialization<>(new ArraysToList<>(parts, part)));
 	}
 
 	@Override
