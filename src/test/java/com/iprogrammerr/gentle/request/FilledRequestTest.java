@@ -97,7 +97,7 @@ public final class FilledRequestTest {
 	}
 
 	@Test
-	public void shouldFailIfBodyIsNotValid() throws Exception {
+	public void shouldFailIfBodyIsNotValid() {
 		FilledRequest request = new FilledRequest("put", URL, "unknown", new File("??"));
 		assertThat(() -> request.body(), new FunctionThatThrowsException());
 	}

@@ -14,7 +14,7 @@ import org.hamcrest.TypeSafeMatcher;
 import com.iprogrammerr.gentle.request.template.ContentLengthHeader;
 import com.iprogrammerr.gentle.request.template.ContentTypeHeader;
 
-public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<FilledRequest> {
+public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<Request> {
 
 	private final String method;
 	private final String url;
@@ -52,7 +52,7 @@ public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<Fill
 	}
 
 	@Override
-	protected boolean matchesSafely(FilledRequest item) {
+	protected boolean matchesSafely(Request item) {
 		assertThat(item.method(), Matchers.equalToIgnoringCase(this.method));
 		assertThat(item.url(), Matchers.equalTo(this.url));
 		assertThat(this.headers.size(), Matchers.equalTo(item.headers().size() - 2));
