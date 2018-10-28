@@ -3,11 +3,12 @@ package com.iprogrammerr.gentle.request.multipart;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.iprogrammerr.gentle.request.HttpHeader;
+import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.binary.HttpBoundaryBinaryParts;
 import com.iprogrammerr.gentle.request.initialization.HttpBoundary;
 import com.iprogrammerr.gentle.request.initialization.Initialization;
 import com.iprogrammerr.gentle.request.initialization.StickyInitialization;
+import com.iprogrammerr.gentle.request.template.MultipartContentTypeHeader;
 
 public final class HttpMultipartForm implements MultipartForm {
 
@@ -44,8 +45,8 @@ public final class HttpMultipartForm implements MultipartForm {
 	}
 
 	@Override
-	public HttpHeader header() {
-		return new HttpHeader("Content-Type", "multipart/form-data; boundary=" + boundary.value());
+	public Header header() {
+		return new MultipartContentTypeHeader(this.boundary.value());
 	}
 
 	@Override
@@ -61,5 +62,4 @@ public final class HttpMultipartForm implements MultipartForm {
 	public String boundary() {
 		return this.boundary.value();
 	}
-
 }

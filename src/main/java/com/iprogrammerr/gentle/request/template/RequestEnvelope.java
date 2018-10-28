@@ -14,13 +14,13 @@ public abstract class RequestEnvelope implements Request {
 	}
 
 	@Override
-	public final String url() {
-		return this.base.url();
+	public final String method() {
+		return this.base.method();
 	}
 
 	@Override
-	public final String method() {
-		return this.base.method();
+	public final String url() {
+		return this.base.url();
 	}
 
 	@Override

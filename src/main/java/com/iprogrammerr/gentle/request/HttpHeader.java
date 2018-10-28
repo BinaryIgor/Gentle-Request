@@ -20,17 +20,9 @@ public final class HttpHeader implements Header {
 		return this.value;
 	}
 
+	@Override
 	public boolean is(String key) {
 		return this.key.equalsIgnoreCase(key);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.key.hashCode();
-		result = prime * result + this.value.hashCode();
-		return result;
 	}
 
 	@Override
@@ -38,13 +30,17 @@ public final class HttpHeader implements Header {
 		boolean equal;
 		if (this == object) {
 			equal = true;
-		} else if (object == null || getClass() != object.getClass()) {
+		} else if (object == null || object.getClass().isAssignableFrom(Header.class)) {
 			equal = false;
 		} else {
-			HttpHeader other = (HttpHeader) object;
-			equal = other.is(this.key) && this.value.equals(other.value);
+			Header other = (Header) object;
+			equal = is(other.key()) && this.value.equals(other.value());
 		}
 		return equal;
 	}
 
+	@Override
+	public String toString() {
+		return this.key + ": " + this.value;
+	}
 }

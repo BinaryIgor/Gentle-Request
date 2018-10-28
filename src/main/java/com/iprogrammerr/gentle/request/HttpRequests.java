@@ -83,7 +83,8 @@ public final class HttpRequests implements Requests {
 	}
 
 	@Override
-	public Response methodResponse(String method, String url, HttpHeader... headers) throws Exception {
+	public Response methodResponse(String method, String url, HttpHeader... headers)
+			throws Exception {
 		return response(url, method.toUpperCase(), new byte[0], headers);
 	}
 
@@ -99,7 +100,7 @@ public final class HttpRequests implements Requests {
 				os.close();
 			}
 			int code = connection.getResponseCode();
-			List<HttpHeader> responseHeaders = new ArrayList<>();
+			List<Header> responseHeaders = new ArrayList<>();
 			int bodySize = 0;
 			for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
 				if (entry.getKey() == null) {

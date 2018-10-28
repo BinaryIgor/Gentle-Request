@@ -20,4 +20,18 @@ public abstract class HeaderEnvelope implements Header {
 		return this.base.value();
 	}
 
+	@Override
+	public final boolean is(String key) {
+		return this.base.is(key);
+	}
+
+	@Override
+	public final boolean equals(Object object) {
+		return this.base.equals(object);
+	}
+
+	@Override
+	public final String toString() {
+		return this.base.toString();
+	}
 }

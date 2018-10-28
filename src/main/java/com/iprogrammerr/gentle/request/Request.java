@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface Request {
 
-	String url();
-
 	String method();
+
+	String url();
 
 	List<Header> headers();
 

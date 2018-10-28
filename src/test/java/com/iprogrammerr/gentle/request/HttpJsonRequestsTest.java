@@ -20,7 +20,7 @@ public final class HttpJsonRequestsTest {
 		json.put("scale", 34.5);
 		JsonRequests requests = new HttpJsonRequests(new MockedRequests((url, body, headers) -> {
 			byte[] rb = json.toString().getBytes();
-			List<HttpHeader> hr = new ArrayList<>();
+			List<Header> hr = new ArrayList<>();
 			hr.add(new HttpHeader("Content-Type", "application/json"));
 			hr.add(new HttpHeader("Content-Length", String.valueOf(rb.length)));
 			for (HttpHeader h : headers) {

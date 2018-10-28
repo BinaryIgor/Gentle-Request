@@ -9,16 +9,16 @@ import com.iprogrammerr.gentle.request.binary.SmartBinary;
 public final class HttpResponse implements Response {
 
 	private final int code;
-	private final List<HttpHeader> headers;
+	private final List<Header> headers;
 	private final SmartBinary body;
 
-	public HttpResponse(int code, List<HttpHeader> headers, SmartBinary body) {
+	public HttpResponse(int code, List<Header> headers, SmartBinary body) {
 		this.code = code;
 		this.headers = headers;
 		this.body = body;
 	}
 
-	public HttpResponse(int code, List<HttpHeader> headers, byte[] body) {
+	public HttpResponse(int code, List<Header> headers, byte[] body) {
 		this(code, headers, new HttpBinary(body));
 	}
 
@@ -26,7 +26,7 @@ public final class HttpResponse implements Response {
 		this(code, new ArrayList<>(), body);
 	}
 
-	public HttpResponse(int code, List<HttpHeader> headers) {
+	public HttpResponse(int code, List<Header> headers) {
 		this(code, headers, new byte[0]);
 	}
 
@@ -45,13 +45,13 @@ public final class HttpResponse implements Response {
 	}
 
 	@Override
-	public List<HttpHeader> headers() {
+	public List<Header> headers() {
 		return this.headers;
 	}
 
 	@Override
 	public boolean hasHeader(String key) {
-		for (HttpHeader h : this.headers) {
+		for (Header h : this.headers) {
 			if (h.is(key)) {
 				return true;
 			}
@@ -60,8 +60,8 @@ public final class HttpResponse implements Response {
 	}
 
 	@Override
-	public HttpHeader header(String key) throws Exception {
-		for (HttpHeader h : this.headers) {
+	public Header header(String key) throws Exception {
+		for (Header h : this.headers) {
 			if (h.is(key)) {
 				return h;
 			}

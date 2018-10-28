@@ -1,5 +1,5 @@
 package com.iprogrammerr.gentle.request;
 
-public interface Connection {
+public interface Connections {
 	Response response(Request request) throws Exception;
 }

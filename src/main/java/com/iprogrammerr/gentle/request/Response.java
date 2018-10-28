@@ -10,11 +10,11 @@ public interface Response {
 
 	boolean hasProperCode();
 
-	List<HttpHeader> headers();
+	List<Header> headers();
 
 	boolean hasHeader(String key);
 
-	HttpHeader header(String key) throws Exception;
+	Header header(String key) throws Exception;
 
 	SmartBinary body();
 }

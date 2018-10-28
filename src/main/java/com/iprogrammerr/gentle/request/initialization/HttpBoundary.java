@@ -6,7 +6,7 @@ public final class HttpBoundary implements Initialization<String> {
 
 	@Override
 	public String value() {
-		int length = 5 + (int) (Math.random() * 50);
+		int length = 25 + (int) (Math.random() * 45);
 		byte[] boundary = new byte[length];
 		for (int i = 0; i < boundary.length; ++i) {
 			boundary[i] = randomCharacter();

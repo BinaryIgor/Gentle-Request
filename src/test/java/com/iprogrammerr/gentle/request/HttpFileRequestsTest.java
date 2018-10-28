@@ -16,7 +16,7 @@ public final class HttpFileRequestsTest {
 	@Test
 	public void canSendAndReceive() throws Exception {
 		FileRequests requests = new HttpFileRequests(new MockedRequests((url, body, headers) -> {
-			List<HttpHeader> h = new ArrayList<>(Arrays.asList(headers));
+			List<Header> h = new ArrayList<>(Arrays.asList(headers));
 			h.add(new HttpHeader("Content-Length", String.valueOf(body.length)));
 			return new HttpResponse(200, h, body);
 		}));

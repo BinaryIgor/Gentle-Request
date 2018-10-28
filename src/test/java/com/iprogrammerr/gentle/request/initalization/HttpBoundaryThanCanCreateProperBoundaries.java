@@ -18,11 +18,11 @@ public final class HttpBoundaryThanCanCreateProperBoundaries extends TypeSafeMat
 
 	@Override
 	protected boolean matchesSafely(HttpBoundary item) {
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 50; ++i) {
 			String boundary = item.value();
 			assertThat(boundary, Matchers.matchesPattern("^[a-zA-Z0-9]*$"));
 			assertThat(boundary.length(),
-					Matchers.allOf(Matchers.greaterThanOrEqualTo(5), Matchers.lessThan(70)));
+					Matchers.allOf(Matchers.greaterThanOrEqualTo(25), Matchers.lessThan(70)));
 		}
 		return true;
 	}

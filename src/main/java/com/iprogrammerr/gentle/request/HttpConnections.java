@@ -13,7 +13,7 @@ import com.iprogrammerr.gentle.request.binary.Binary;
 import com.iprogrammerr.gentle.request.binary.OnePacketBinary;
 import com.iprogrammerr.gentle.request.binary.PacketsBinary;
 
-public final class HttpConnection implements Connection {
+public final class HttpConnections implements Connections {
 
 	private static final String HEAD = "HEAD";
 	private static final String CONTENT_LENGTH = "Content-Length";
@@ -21,36 +21,35 @@ public final class HttpConnection implements Connection {
 	private final int connectTimeout;
 	private final boolean followRedirects;
 
-	public HttpConnection(int readTimeout, int connectTimeout, boolean followRedirects) {
+	public HttpConnections(int readTimeout, int connectTimeout, boolean followRedirects) {
 		this.readTimeout = readTimeout;
 		this.connectTimeout = connectTimeout;
 		this.followRedirects = followRedirects;
 	}
 
-	public HttpConnection(int readTimeout, int connectTimeout) {
+	public HttpConnections(int readTimeout, int connectTimeout) {
 		this(readTimeout, connectTimeout, false);
 	}
 
-	public HttpConnection(int timeout, boolean followRedirects) {
+	public HttpConnections(int timeout, boolean followRedirects) {
 		this((int) (timeout * 0.75), timeout, followRedirects);
 	}
 
-	public HttpConnection(int timeout) {
+	public HttpConnections(int timeout) {
 		this(timeout, false);
 	}
 
-	public HttpConnection(boolean followRedirects) {
+	public HttpConnections(boolean followRedirects) {
 		this(5000, followRedirects);
 	}
 
-	public HttpConnection() {
+	public HttpConnections() {
 		this(5000, false);
 	}
 
 	@Override
 	public Response response(Request request) throws Exception {
-		HttpURLConnection connection = connection(request.url(), request.method(),
-				request.body().length > 0 ? true : false, request.headers());
+		HttpURLConnection connection = connection(request);
 		try {
 			connection.connect();
 			if (request.body().length > 0) {
@@ -59,14 +58,14 @@ public final class HttpConnection implements Connection {
 				os.close();
 			}
 			int code = connection.getResponseCode();
-			List<HttpHeader> responseHeaders = new ArrayList<>();
+			List<Header> responseHeaders = new ArrayList<>();
 			int bodySize = 0;
 			for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
 				if (entry.getKey() == null) {
 					continue;
 				}
 				for (String value : entry.getValue()) {
-					HttpHeader header = new HttpHeader(entry.getKey(), value);
+					Header header = new HttpHeader(entry.getKey(), value);
 					responseHeaders.add(header);
 					if (header.is(CONTENT_LENGTH)) {
 						bodySize = bodySize(value);
@@ -95,15 +94,14 @@ public final class HttpConnection implements Connection {
 				&& code != HttpURLConnection.HTTP_NOT_MODIFIED;
 	}
 
-	private HttpURLConnection connection(String url, String method, boolean output,
-			List<Header> headers) throws Exception {
-		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestMethod(method.toUpperCase());
-		connection.setDoOutput(output);
+	private HttpURLConnection connection(Request request) throws Exception {
+		HttpURLConnection connection = (HttpURLConnection) new URL(request.url()).openConnection();
+		connection.setRequestMethod(request.method().toUpperCase());
+		connection.setDoOutput(request.body().length > 0 ? true : false);
 		connection.setReadTimeout(this.readTimeout);
 		connection.setConnectTimeout(this.connectTimeout);
 		HttpURLConnection.setFollowRedirects(this.followRedirects);
-		for (Header h : headers) {
+		for (Header h : request.headers()) {
 			connection.setRequestProperty(h.key(), h.value());
 		}
 		return connection;
