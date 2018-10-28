@@ -26,7 +26,7 @@ public final class EmptyRequestTest {
 
 	@Test
 	public void canHaveNoHeaders() {
-		String method = "get";
+		String method = "POST";
 		String url = "www.mock.com";
 		assertThat(new EmptyRequest(method, url), new EmptyRequestThatHasProperValues(method, url));
 	}
