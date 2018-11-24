@@ -1,13 +1,14 @@
 package com.iprogrammerr.gentle.request.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public final class Attributes implements TypedMap {
+public final class Attributes implements Primitives {
 
-	private final List<StringObject> values;
+	private final List<KeyValue> values;
 
-	private Attributes(List<StringObject> values) {
+	private Attributes(List<KeyValue> values) {
 		this.values = values;
 	}
 
@@ -20,10 +21,10 @@ public final class Attributes implements TypedMap {
 	}
 
 	@Override
-	public TypedMap put(String key, Object value) {
+	public Primitives put(String key, Object value) {
 		int index = index(key);
 		if (index >= 0) {
-			this.values.set(index, this.values.get(index)).revalue(value);
+			this.values.set(index, new StringObject(key, value));
 		} else {
 			this.values.add(new StringObject(key, value));
 		}
@@ -42,18 +43,13 @@ public final class Attributes implements TypedMap {
 	}
 
 	@Override
+	public Number numberValue(String key) throws Exception {
+		return value(key, Number.class);
+	}
+
+	@Override
 	public boolean booleanValue(String key) throws Exception {
 		return value(key, Boolean.class);
-	}
-
-	@Override
-	public int intValue(String key) throws Exception {
-		return value(key, Integer.class);
-	}
-
-	@Override
-	public long longValue(String key) throws Exception {
-		return value(key, Long.class);
 	}
 
 	@Override
@@ -62,28 +58,18 @@ public final class Attributes implements TypedMap {
 	}
 
 	@Override
-	public float floatValue(String key) throws Exception {
-		return value(key, Float.class);
-	}
-
-	@Override
-	public double doubleValue(String key) throws Exception {
-		return value(key, Double.class);
-	}
-
-	@Override
 	public byte[] binaryValue(String key) throws Exception {
 		return value(key, byte[].class);
 	}
 
 	@Override
-	public List<? extends KeyValue> keyValues() {
+	public List<KeyValue> keyValues() {
 		return new ArrayList<>(this.values);
 	}
 
 	private <T> T value(String key, Class<T> clazz) throws Exception {
 		for (KeyValue kv : this.values) {
-			if (kv.key().equals(key) && kv.value().getClass().isAssignableFrom(clazz)) {
+			if (kv.key().equals(key) && clazz.isAssignableFrom(kv.value().getClass())) {
 				return clazz.cast(kv.value());
 			}
 		}
@@ -99,13 +85,54 @@ public final class Attributes implements TypedMap {
 	public <T> boolean has(String key, Class<T> clazz) {
 		int index = index(key);
 		if (index >= 0) {
-			return this.values.get(index).value().getClass().isAssignableFrom(clazz);
+			return clazz.isAssignableFrom(this.values.get(index).value().getClass());
 		}
 		return false;
 	}
 
 	@Override
-	public int size() {
-		return this.values.size();
+	public boolean equals(Object object) {
+		boolean equal;
+		if (!Primitives.class.isAssignableFrom(object.getClass())) {
+			equal = false;
+		} else if (object == this) {
+			equal = true;
+		} else {
+			Primitives other = (Primitives) object;
+			equal = true;
+			for (KeyValue kv : this.values) {
+				equal = hasEqualEntry(other, kv);
+				if (!equal) {
+					break;
+				}
+			}
+		}
+		return equal;
+	}
+
+	private boolean hasEqualEntry(Primitives primitives, KeyValue keyValue) {
+		boolean equal;
+		try {
+			if (primitives.has(keyValue.key(), Boolean.class)) {
+				equal = this.booleanValue(keyValue.key()) == primitives.booleanValue(keyValue.key());
+			} else if (primitives.has(keyValue.key(), Number.class)) {
+				equal = Math.abs(this.numberValue(keyValue.key()).doubleValue()
+						- primitives.numberValue(keyValue.key()).doubleValue()) < 10e-6;
+			} else if (primitives.has(keyValue.key(), String.class)) {
+				equal = this.stringValue(keyValue.key()).equals(primitives.stringValue(keyValue.key()));
+			} else if (primitives.has(keyValue.key(), byte[].class)) {
+				equal = Arrays.equals(this.binaryValue(keyValue.key()), primitives.binaryValue(keyValue.key()));
+			} else {
+				equal = false;
+			}
+		} catch (Exception e) {
+			equal = false;
+		}
+		return equal;
+	}
+
+	@Override
+	public String toString() {
+		return "Attributes [values=" + values + "]";
 	}
 }

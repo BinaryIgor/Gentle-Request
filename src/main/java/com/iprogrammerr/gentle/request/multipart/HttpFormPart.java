@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import com.iprogrammerr.gentle.request.binary.HeadBodyPattern;
 import com.iprogrammerr.gentle.request.data.Attributes;
-import com.iprogrammerr.gentle.request.data.TypedMap;
+import com.iprogrammerr.gentle.request.data.Primitives;
 
 public final class HttpFormPart implements FormPart {
 
@@ -16,16 +16,16 @@ public final class HttpFormPart implements FormPart {
 	private static final String SEMICOLON = ";";
 	private static final String COLON = ":";
 	private byte[] parsed;
-	private final TypedMap data;
+	private final Primitives data;
 
-	private HttpFormPart(byte[] parsed, TypedMap data) {
+	private HttpFormPart(byte[] parsed, Primitives data) {
 		this.parsed = parsed;
 		this.data = data;
 	}
 
 	public HttpFormPart(String name, String filename, String contentType, byte[] content) {
-		this(new byte[0], new Attributes().put("name", name).put("filename", filename)
-				.put("contentType", contentType).put("content", content));
+		this(new byte[0], new Attributes().put("name", name).put("filename", filename).put("contentType", contentType)
+				.put("content", content));
 	}
 
 	public HttpFormPart(byte[] parsed) {
@@ -113,10 +113,8 @@ public final class HttpFormPart implements FormPart {
 		} else {
 			contentType = TEXT_PLAIN;
 		}
-		byte[] body = Arrays.copyOfRange(this.parsed, headBody + PATTERN.value().length,
-				this.parsed.length);
-		this.data.put("name", name).put("filename", filename).put("contentType", contentType)
-				.put("content", body);
+		byte[] body = Arrays.copyOfRange(this.parsed, headBody + PATTERN.value().length, this.parsed.length);
+		this.data.put("name", name).put("filename", filename).put("contentType", contentType).put("content", body);
 	}
 
 	private String valueFromPair(String keyValue) {

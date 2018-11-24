@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 import com.iprogrammerr.gentle.request.data.Attributes;
-import com.iprogrammerr.gentle.request.data.TypedMap;
+import com.iprogrammerr.gentle.request.data.Primitives;
 
 public final class HttpPart implements Part {
 
@@ -13,9 +13,9 @@ public final class HttpPart implements Part {
 	private static final String CONTENT_TYPE_PREFIX = "Content-Type: ";
 	private static final String COLON = ":";
 	private byte[] parsed;
-	private final TypedMap data;
+	private final Primitives data;
 
-	private HttpPart(byte[] parsed, TypedMap data) {
+	private HttpPart(byte[] parsed, Primitives data) {
 		this.parsed = parsed;
 		this.data = data;
 	}
