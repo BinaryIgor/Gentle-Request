@@ -53,13 +53,11 @@ public final class FilledRequest implements Request {
 		this(method, url, headers, new ContentTypeHeader(contentType), body);
 	}
 
-	public FilledRequest(String method, String url, List<Header> headers, String contentType,
-			byte[] body) {
+	public FilledRequest(String method, String url, List<Header> headers, String contentType, byte[] body) {
 		this(method, url, headers, contentType, () -> body);
 	}
 
-	public FilledRequest(String method, String url, String contentType, byte[] body,
-			Header... headers) {
+	public FilledRequest(String method, String url, String contentType, byte[] body, Header... headers) {
 		this(method, url, new ArrayList<>(Arrays.asList(headers)), contentType, body);
 	}
 
@@ -90,8 +88,7 @@ public final class FilledRequest implements Request {
 	}
 
 	public FilledRequest(String method, String url, List<Header> headers, Multipart body) {
-		this(method, url, headers, body.header(),
-				new UnreliableStickyInitialization<>(() -> body.body()));
+		this(method, url, headers, body.header(), new UnreliableStickyInitialization<>(() -> body.body()));
 	}
 
 	public FilledRequest(String method, String url, Multipart body, Header... headers) {
@@ -99,22 +96,19 @@ public final class FilledRequest implements Request {
 	}
 
 	public FilledRequest(String method, String url, List<Header> headers, MultipartForm body) {
-		this(method, url, headers, body.header(),
-				new UnreliableStickyInitialization<>(() -> body.body()));
+		this(method, url, headers, body.header(), new UnreliableStickyInitialization<>(() -> body.body()));
 	}
 
 	public FilledRequest(String method, String url, MultipartForm body, Header... headers) {
 		this(method, url, new ArrayList<>(Arrays.asList(headers)), body);
 	}
 
-	public FilledRequest(String method, String url, List<Header> headers, String contentType,
-			File body) {
+	public FilledRequest(String method, String url, List<Header> headers, String contentType, File body) {
 		this(method, url, headers, new ContentTypeHeader(contentType),
 				new UnreliableStickyInitialization<>(new FileContent(body)));
 	}
 
-	public FilledRequest(String method, String url, String contentType, File body,
-			Header... headers) {
+	public FilledRequest(String method, String url, String contentType, File body, Header... headers) {
 		this(method, url, new ArrayList<>(Arrays.asList(headers)), contentType, body);
 	}
 
@@ -142,5 +136,4 @@ public final class FilledRequest implements Request {
 	public void addHeader(Header header) {
 		this.headers.value().add(header);
 	}
-
 }

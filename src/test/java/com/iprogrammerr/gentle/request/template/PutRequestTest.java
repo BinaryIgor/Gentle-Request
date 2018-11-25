@@ -8,7 +8,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.iprogrammerr.gentle.request.FilledRequestThatHasProperValues;
+import com.iprogrammerr.gentle.request.FilledRequestThatHaveProperValues;
 import com.iprogrammerr.gentle.request.Header;
 import com.iprogrammerr.gentle.request.RequestThatCanHaveAdditionalHeaders;
 import com.iprogrammerr.gentle.request.initialization.FileContent;
@@ -32,14 +32,14 @@ public final class PutRequestTest {
 		byte[] content = new MockedBinary().content();
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new PutRequest(URL, headers, content),
-				new FilledRequestThatHasProperValues(PUT, URL, headers, content));
+				new FilledRequestThatHaveProperValues(PUT, URL, headers, content));
 	}
 
 	@Test
 	public void canContainText() throws Exception {
 		String content = "Text";
 		List<Header> headers = new MockedHeaders().mocked();
-		assertThat(new PutRequest(URL, headers, content), new FilledRequestThatHasProperValues(PUT,
+		assertThat(new PutRequest(URL, headers, content), new FilledRequestThatHaveProperValues(PUT,
 				URL, headers, new ContentTypeHeader("text/plain"), content.getBytes()));
 	}
 
@@ -50,7 +50,7 @@ public final class PutRequestTest {
 		json.put("name", "Igor");
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new PutRequest(URL, json, headers.toArray(new Header[headers.size()])),
-				new FilledRequestThatHasProperValues(PUT, URL, headers,
+				new FilledRequestThatHaveProperValues(PUT, URL, headers,
 						new ContentTypeHeader("application/json"), json.toString().getBytes()));
 	}
 
@@ -61,7 +61,7 @@ public final class PutRequestTest {
 		String type = "image/jpg";
 		List<Header> headers = new MockedHeaders().mocked();
 		byte[] content = new FileContent(file).value();
-		assertThat(new PutRequest(URL, headers, type, file), new FilledRequestThatHasProperValues(
+		assertThat(new PutRequest(URL, headers, type, file), new FilledRequestThatHaveProperValues(
 				PUT, URL, headers, new ContentTypeHeader(type), content));
 	}
 
@@ -71,7 +71,7 @@ public final class PutRequestTest {
 				new HttpPart("application/json", "{\"secret\":true}".getBytes()),
 				new HttpPart("image/png", new MockedBinary().content()));
 		List<Header> headers = new MockedHeaders().mocked();
-		assertThat(new PutRequest(URL, headers, multipart), new FilledRequestThatHasProperValues(
+		assertThat(new PutRequest(URL, headers, multipart), new FilledRequestThatHaveProperValues(
 				PUT, URL, headers, multipart.header(), multipart.body()));
 	}
 
@@ -83,7 +83,7 @@ public final class PutRequestTest {
 				new HttpFormPart("image", "java.png", "image/png", new MockedBinary().content()));
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new PutRequest(URL, multipart, headers.toArray(new Header[headers.size()])),
-				new FilledRequestThatHasProperValues(PUT, URL, headers, multipart.header(),
+				new FilledRequestThatHaveProperValues(PUT, URL, headers, multipart.header(),
 						multipart.body()));
 	}
 

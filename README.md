@@ -70,6 +70,29 @@ try {
 
 }
 ```
+* *asynchronicity*
+```java
+AsyncConnections connections = new AsyncHttpConnections(new HttpConnections());
+connections.connect(new GetRequest(url/*,new AuthorizationHeader(SECRET),
+    new HttpHeader("key", "value")*/), new ConnectionCallback() {
+			
+        @Override
+	public void onSuccess(Response response) {
+	    if (response.hasSuccessCode()) {
+	        byte[] raw = response.body().value();
+	        String string = response.body().stringValue();
+		JSONObject json = response.body().jsonValue();
+	    } else {
+			
+	    }
+	}
+			
+        @Override
+	public void onFailure(Exception exception) {
+	    exception.printStackTrace();
+	}
+});
+```
 ## Maven
 ```xml
 <dependency>

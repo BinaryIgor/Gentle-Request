@@ -1,7 +1,5 @@
 package com.iprogrammerr.gentle.request.multipart;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -21,25 +19,28 @@ public final class HttpMultipartFormThatIsReadingAndWriting extends TypeSafeMatc
 	protected boolean matchesSafely(HttpMultipartForm item) {
 		boolean matched;
 		try {
-			assertTrue(item.header().equals(new MultipartContentTypeHeader(item.boundary())));
-			HttpMultipartForm parsed = new HttpMultipartForm(item.boundary(), item.body());
-			partsShouldBeEqual(item.parts().iterator(), parsed.parts().iterator());
-			matched = true;
+			matched = item.header().equals(new MultipartContentTypeHeader(item.boundary()));
+			if (matched) {
+				matched = partsAreEqual(item.parts().iterator(),
+						new HttpMultipartForm(item.boundary(), item.body()).parts().iterator());
+			}
 		} catch (Exception e) {
 			matched = false;
 		}
 		return matched;
 	}
 
-	private void partsShouldBeEqual(Iterator<FormPart> first, Iterator<FormPart> second)
-			throws Exception {
+	private boolean partsAreEqual(Iterator<FormPart> first, Iterator<FormPart> second) throws Exception {
+		boolean equal = true;
 		while (first.hasNext()) {
 			FormPart fp = first.next();
 			FormPart sp = second.next();
-			assertTrue(fp.name().equals(sp.name()));
-			assertTrue(fp.contentType().equals(sp.contentType()));
-			assertTrue(fp.filename().equals(sp.filename()));
-			assertTrue(Arrays.equals(fp.content(), sp.content()));
+			equal = fp.name().equals(sp.name()) && fp.contentType().equals(sp.contentType())
+					&& fp.filename().equals(sp.filename()) && Arrays.equals(fp.content(), sp.content());
+			if (!equal) {
+				break;
+			}
 		}
+		return equal;
 	}
 }

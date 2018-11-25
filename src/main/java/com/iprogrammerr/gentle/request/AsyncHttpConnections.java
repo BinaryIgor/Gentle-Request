@@ -21,6 +21,10 @@ public final class AsyncHttpConnections implements AsyncConnections {
 		this(Executors.newCachedThreadPool(), connections);
 	}
 
+	public AsyncHttpConnections() {
+		this(new HttpConnections());
+	}
+
 	@Override
 	public void connect(Request request, ConnectionCallback callback) {
 		this.executor.execute(() -> {

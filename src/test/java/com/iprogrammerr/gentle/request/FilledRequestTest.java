@@ -30,7 +30,7 @@ public final class FilledRequestTest {
 		byte[] content = new MockedBinary().content();
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new FilledRequest(method, URL, headers, content),
-				new FilledRequestThatHasProperValues(method, URL, headers, content));
+				new FilledRequestThatHaveProperValues(method, URL, headers, content));
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public final class FilledRequestTest {
 		String content = "Text";
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new FilledRequest(method, URL, headers, content),
-				new FilledRequestThatHasProperValues(method, URL, headers,
+				new FilledRequestThatHaveProperValues(method, URL, headers,
 						new ContentTypeHeader("text/plain"), content.getBytes()));
 	}
 
@@ -52,7 +52,7 @@ public final class FilledRequestTest {
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(
 				new FilledRequest(method, URL, json, headers.toArray(new Header[headers.size()])),
-				new FilledRequestThatHasProperValues(method, URL, headers,
+				new FilledRequestThatHaveProperValues(method, URL, headers,
 						new ContentTypeHeader("application/json"), json.toString().getBytes()));
 	}
 
@@ -67,7 +67,7 @@ public final class FilledRequestTest {
 		assertThat(
 				new FilledRequest(method, URL, type, file,
 						headers.toArray(new Header[headers.size()])),
-				new FilledRequestThatHasProperValues(method, URL, headers,
+				new FilledRequestThatHaveProperValues(method, URL, headers,
 						new ContentTypeHeader(type), content));
 	}
 
@@ -79,7 +79,7 @@ public final class FilledRequestTest {
 				new HttpPart("image/png", new MockedBinary().content()));
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new FilledRequest(method, URL, headers, multipart),
-				new FilledRequestThatHasProperValues(method, URL, headers, multipart.header(),
+				new FilledRequestThatHaveProperValues(method, URL, headers, multipart.header(),
 						multipart.body()));
 	}
 
@@ -92,7 +92,7 @@ public final class FilledRequestTest {
 				new HttpFormPart("image", "java.png", "image/png", new MockedBinary().content()));
 		List<Header> headers = new MockedHeaders().mocked();
 		assertThat(new FilledRequest(method, URL, headers, multipart),
-				new FilledRequestThatHasProperValues(method, URL, headers, multipart.header(),
+				new FilledRequestThatHaveProperValues(method, URL, headers, multipart.header(),
 						multipart.body()));
 	}
 

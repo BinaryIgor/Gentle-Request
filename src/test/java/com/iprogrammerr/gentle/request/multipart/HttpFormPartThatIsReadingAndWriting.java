@@ -1,7 +1,5 @@
 package com.iprogrammerr.gentle.request.multipart;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.hamcrest.Description;
@@ -14,8 +12,7 @@ public final class HttpFormPartThatIsReadingAndWriting extends TypeSafeMatcher<H
 	private final String name;
 	private final String filename;
 
-	public HttpFormPartThatIsReadingAndWriting(byte[] content, String contentType, String name,
-			String filename) {
+	public HttpFormPartThatIsReadingAndWriting(byte[] content, String contentType, String name, String filename) {
 		this.content = content;
 		this.contentType = contentType;
 		this.name = name;
@@ -35,14 +32,11 @@ public final class HttpFormPartThatIsReadingAndWriting extends TypeSafeMatcher<H
 	protected boolean matchesSafely(HttpFormPart item) {
 		boolean matched;
 		try {
-			byte[] parsed = item.source();
-			HttpFormPart parsedPart = new HttpFormPart(parsed);
-			assertTrue(Arrays.equals(parsed, parsedPart.source()));
-			assertTrue(this.contentType.equals(parsedPart.contentType())
-					&& this.name.equals(parsedPart.name())
-					&& this.filename.equals(item.filename()));
-			assertTrue(Arrays.equals(content, parsedPart.content()));
-			matched = true;
+			byte[] source = item.source();
+			HttpFormPart rawPart = new HttpFormPart(source);
+			matched = Arrays.equals(source, rawPart.source()) && this.contentType.equals(rawPart.contentType())
+					&& this.name.equals(rawPart.name()) && this.filename.equals(item.filename())
+					&& Arrays.equals(this.content, rawPart.content());
 		} catch (Exception e) {
 			e.printStackTrace();
 			matched = false;

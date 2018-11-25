@@ -16,28 +16,26 @@ public final class HttpMultipart implements Multipart {
 	private static final String TWO_HYPHENS = "--";
 	private final String type;
 	private final Initialization<String> boundary;
-	private byte[] parsed;
+	private byte[] source;
 	private final Initialization<List<Part>> parts;
 
-	private HttpMultipart(String type, Initialization<String> boundary, byte[] parsed,
+	private HttpMultipart(String type, Initialization<String> boundary, byte[] source,
 			Initialization<List<Part>> parts) {
 		this.type = type;
 		this.boundary = boundary;
-		this.parsed = parsed;
+		this.source = source;
 		this.parts = parts;
 	}
 
-	public HttpMultipart(String type, String boundary, byte[] parsed) {
-		this(type, new StickyInitialization<>(() -> boundary), parsed,
-				new StickyInitialization<>(() -> {
-					List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary)
-							.parts(parsed);
-					List<Part> parts = new ArrayList<>(rawParts.size());
-					for (byte[] p : rawParts) {
-						parts.add(new HttpPart(p));
-					}
-					return parts;
-				}));
+	public HttpMultipart(String type, String boundary, byte[] source) {
+		this(type, new StickyInitialization<>(() -> boundary), source, new StickyInitialization<>(() -> {
+			List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary).parts(source);
+			List<Part> parts = new ArrayList<>(rawParts.size());
+			for (byte[] p : rawParts) {
+				parts.add(new HttpPart(p));
+			}
+			return parts;
+		}));
 	}
 
 	public HttpMultipart(String type, List<Part> parts) {
@@ -61,11 +59,10 @@ public final class HttpMultipart implements Multipart {
 
 	@Override
 	public byte[] body() throws Exception {
-		if (this.parsed.length < 1) {
-			this.parsed = new HttpMultipartBody(this.boundary.value(), this.parts.value())
-					.content();
+		if (this.source.length < 1) {
+			this.source = new HttpMultipartBody(this.boundary.value(), this.parts.value()).content();
 		}
-		return this.parsed;
+		return this.source;
 	}
 
 	@Override

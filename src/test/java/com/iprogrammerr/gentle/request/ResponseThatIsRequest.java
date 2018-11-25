@@ -31,8 +31,8 @@ public final class ResponseThatIsRequest extends TypeSafeMatcher<Response> {
 		assertThat(this.code, Matchers.equalTo(item.code()));
 		try {
 			assertTrue(Arrays.equals(this.request.body(), item.body().value()));
-			assertThat(item.headers(), Matchers.hasItems(
-					this.request.headers().toArray(new Header[this.request.headers().size()])));
+			assertThat(item.headers(),
+					Matchers.hasItems(this.request.headers().toArray(new Header[this.request.headers().size()])));
 			matched = true;
 		} catch (Exception e) {
 			e.printStackTrace();

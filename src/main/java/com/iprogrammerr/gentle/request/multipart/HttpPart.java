@@ -2,12 +2,9 @@ package com.iprogrammerr.gentle.request.multipart;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.iprogrammerr.gentle.request.binary.BinaryWithAttributes;
 import com.iprogrammerr.gentle.request.binary.BinaryWithSingleAttribute;
-import com.iprogrammerr.gentle.request.binary.DefaultBinaryWithAttributes;
 import com.iprogrammerr.gentle.request.initialization.UnreliableInitialization;
 import com.iprogrammerr.gentle.request.initialization.UnreliableStickyInitialization;
 
@@ -36,9 +33,8 @@ public final class HttpPart implements Part {
 			} else {
 				contentType = TEXT_PLAIN;
 			}
-			Map<String, String> attributes = new HashMap<>();
-			attributes.put("contentType", contentType);
-			return new DefaultBinaryWithAttributes(Arrays.copyOfRange(source, bodyIndex, source.length), attributes);
+			return new BinaryWithSingleAttribute(Arrays.copyOfRange(source, bodyIndex, source.length), "contentType",
+					contentType);
 		}));
 	}
 

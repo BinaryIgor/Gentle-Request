@@ -15,20 +15,18 @@ public final class HttpMultipartForm implements MultipartForm {
 
 	private static final String TWO_HYPHENS = "--";
 	private final Initialization<String> boundary;
-	private byte[] parsed;
+	private byte[] source;
 	private final Initialization<List<FormPart>> parts;
 
-	private HttpMultipartForm(Initialization<String> boundary, byte[] parsed,
-			Initialization<List<FormPart>> parts) {
+	private HttpMultipartForm(Initialization<String> boundary, byte[] source, Initialization<List<FormPart>> parts) {
 		this.boundary = boundary;
-		this.parsed = parsed;
+		this.source = source;
 		this.parts = parts;
 	}
 
-	public HttpMultipartForm(String boundary, byte[] parsed) {
-		this(new StickyInitialization<>(() -> boundary), parsed, new StickyInitialization<>(() -> {
-			List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary)
-					.parts(parsed);
+	public HttpMultipartForm(String boundary, byte[] source) {
+		this(new StickyInitialization<>(() -> boundary), source, new StickyInitialization<>(() -> {
+			List<byte[]> rawParts = new HttpBoundaryBinaryParts(TWO_HYPHENS + boundary).parts(source);
 			List<FormPart> parts = new ArrayList<>(rawParts.size());
 			for (byte[] rp : rawParts) {
 				parts.add(new HttpFormPart(rp));
@@ -58,11 +56,10 @@ public final class HttpMultipartForm implements MultipartForm {
 
 	@Override
 	public byte[] body() throws Exception {
-		if (this.parsed.length < 1) {
-			this.parsed = new HttpMultipartBody(this.boundary.value(), this.parts.value())
-					.content();
+		if (this.source.length < 1) {
+			this.source = new HttpMultipartBody(this.boundary.value(), this.parts.value()).content();
 		}
-		return this.parsed;
+		return this.source;
 	}
 
 	@Override

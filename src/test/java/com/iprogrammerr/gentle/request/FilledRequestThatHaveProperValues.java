@@ -14,7 +14,7 @@ import org.hamcrest.TypeSafeMatcher;
 import com.iprogrammerr.gentle.request.template.ContentLengthHeader;
 import com.iprogrammerr.gentle.request.template.ContentTypeHeader;
 
-public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<Request> {
+public final class FilledRequestThatHaveProperValues extends TypeSafeMatcher<Request> {
 
 	private final String method;
 	private final String url;
@@ -22,7 +22,7 @@ public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<Requ
 	private final Header contentType;
 	private final byte[] body;
 
-	public FilledRequestThatHasProperValues(String method, String url, List<Header> headers,
+	public FilledRequestThatHaveProperValues(String method, String url, List<Header> headers,
 			Header contentType, byte[] body) {
 		this.method = method;
 		this.url = url;
@@ -31,18 +31,18 @@ public final class FilledRequestThatHasProperValues extends TypeSafeMatcher<Requ
 		this.body = body;
 	}
 
-	public FilledRequestThatHasProperValues(String method, String url, Header contentType,
+	public FilledRequestThatHaveProperValues(String method, String url, Header contentType,
 			byte[] body) {
 		this(method, url, new ArrayList<>(), contentType, body);
 	}
 
-	public FilledRequestThatHasProperValues(String method, String url, List<Header> headers,
+	public FilledRequestThatHaveProperValues(String method, String url, List<Header> headers,
 			byte[] body) {
 		this(method, url, headers, new ContentTypeHeader("application/x-www-form-urlencoded"),
 				body);
 	}
 
-	public FilledRequestThatHasProperValues(String method, String url, byte[] body) {
+	public FilledRequestThatHaveProperValues(String method, String url, byte[] body) {
 		this(method, url, new ArrayList<>(), body);
 	}
 

@@ -7,6 +7,6 @@ public final class MultipartContentTypeHeader extends HeaderEnvelope {
 	}
 
 	public MultipartContentTypeHeader(String boundary) {
-		super(new ContentTypeHeader("multipart/form-data", "boundary=" + boundary));
+		this("form-data", boundary);
 	}
 }

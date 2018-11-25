@@ -3,8 +3,10 @@ package com.iprogrammerr.gentle.request;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,24 +17,26 @@ import com.iprogrammerr.gentle.request.binary.PacketsBinary;
 
 public final class HttpConnections implements Connections {
 
-	private static final String HEAD = "HEAD";
-	private static final String CONTENT_LENGTH = "Content-Length";
+	private static final int OK = 200;
+	private static final int NO_CONTENT = 204;
+	private static final int NOT_MODIFIED = 304;
+	private static final int BAD_REQUEST = 400;
 	private final int readTimeout;
 	private final int connectTimeout;
-	private final boolean followRedirects;
+	private final boolean redirects;
 
-	public HttpConnections(int readTimeout, int connectTimeout, boolean followRedirects) {
+	public HttpConnections(int readTimeout, int connectTimeout, boolean redirects) {
 		this.readTimeout = readTimeout;
 		this.connectTimeout = connectTimeout;
-		this.followRedirects = followRedirects;
+		this.redirects = redirects;
 	}
 
 	public HttpConnections(int readTimeout, int connectTimeout) {
 		this(readTimeout, connectTimeout, false);
 	}
 
-	public HttpConnections(int timeout, boolean followRedirects) {
-		this((int) (timeout * 0.75), timeout, followRedirects);
+	public HttpConnections(int timeout, boolean redirects) {
+		this((int) (timeout * 0.75), timeout, redirects);
 	}
 
 	public HttpConnections(int timeout) {
@@ -53,45 +57,45 @@ public final class HttpConnections implements Connections {
 		try {
 			connection.connect();
 			if (request.body().length > 0) {
-				BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
-				os.write(request.body());
-				os.close();
+				writeBody(connection.getOutputStream(), request.body());
 			}
 			int code = connection.getResponseCode();
-			List<Header> responseHeaders = new ArrayList<>();
-			int bodySize = 0;
-			for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
-				if (entry.getKey() == null) {
-					continue;
-				}
-				for (String value : entry.getValue()) {
-					Header header = new HttpHeader(entry.getKey(), value);
-					responseHeaders.add(header);
-					if (header.is(CONTENT_LENGTH)) {
-						bodySize = bodySize(value);
-					}
-				}
-			}
-			InputStream stream = code < 400 ? connection.getInputStream()
-					: connection.getErrorStream();
-			byte[] responseBody = canHaveBody(code, request.method()) ? body(stream, bodySize)
-					: new byte[0];
+			List<Header> responseHeaders = headers(connection);
+			int bodySize = bodySize(responseHeaders);
+			InputStream stream = code < BAD_REQUEST ? connection.getInputStream() : connection.getErrorStream();
+			byte[] responseBody = canHaveBody(code, request.method()) ? body(stream, bodySize) : new byte[0];
 			if (bodySize > 0 && bodySize != responseBody.length) {
-				throw new Exception(String.format(
-						"Server sent inconsistent body, %d expected," + " but %d received",
+				throw new Exception(String.format("Server sent inconsistent body, %d expected, but %d received",
 						bodySize, responseBody.length));
 			}
 			return new HttpResponse(code, responseHeaders, responseBody);
 		} finally {
 			connection.disconnect();
-
 		}
 	}
 
+	private void writeBody(OutputStream output, byte[] body) throws Exception {
+		BufferedOutputStream os = new BufferedOutputStream(output);
+		os.write(body);
+		os.close();
+	}
+
+	private List<Header> headers(URLConnection connection) {
+		List<Header> headers = new ArrayList<>();
+		for (Map.Entry<String, List<String>> entry : connection.getHeaderFields().entrySet()) {
+			// Yes, httpUrlConnection can have null keys in headers map...
+			if (entry.getKey() == null) {
+				continue;
+			}
+			for (String value : entry.getValue()) {
+				headers.add(new HttpHeader(entry.getKey(), value));
+			}
+		}
+		return headers;
+	}
+
 	private boolean canHaveBody(int code, String method) {
-		return !method.equalsIgnoreCase(HEAD) && code >= 200
-				&& code != HttpURLConnection.HTTP_NO_CONTENT
-				&& code != HttpURLConnection.HTTP_NOT_MODIFIED;
+		return !method.equalsIgnoreCase("HEAD") && code >= OK && code != NO_CONTENT && code != NOT_MODIFIED;
 	}
 
 	private HttpURLConnection connection(Request request) throws Exception {
@@ -100,21 +104,26 @@ public final class HttpConnections implements Connections {
 		connection.setDoOutput(request.body().length > 0 ? true : false);
 		connection.setReadTimeout(this.readTimeout);
 		connection.setConnectTimeout(this.connectTimeout);
-		HttpURLConnection.setFollowRedirects(this.followRedirects);
+		HttpURLConnection.setFollowRedirects(this.redirects);
 		for (Header h : request.headers()) {
 			connection.setRequestProperty(h.key(), h.value());
 		}
 		return connection;
 	}
 
-	private int bodySize(String value) {
-		int bodySize;
+	private int bodySize(List<Header> headers) {
+		int size = 0;
 		try {
-			bodySize = Integer.parseInt(value.trim());
+			for (Header h : headers) {
+				if (h.is("Content-Length")) {
+					size = Integer.parseInt(h.value().trim());
+					break;
+				}
+			}
 		} catch (Exception e) {
-			bodySize = 0;
+			size = 0;
 		}
-		return bodySize;
+		return size;
 	}
 
 	private byte[] body(InputStream inputStream, int size) {

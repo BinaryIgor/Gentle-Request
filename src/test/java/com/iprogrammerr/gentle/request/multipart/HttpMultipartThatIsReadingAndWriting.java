@@ -1,7 +1,5 @@
 package com.iprogrammerr.gentle.request.multipart;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -27,12 +25,12 @@ public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<
 	protected boolean matchesSafely(HttpMultipart item) {
 		boolean matched;
 		try {
-			assertTrue(item.header()
-					.equals(new MultipartContentTypeHeader(this.type, item.boundary())));
+			matched = item.header().equals(new MultipartContentTypeHeader(this.type, item.boundary()));
 			HttpMultipart parsed = new HttpMultipart(this.type, item.boundary(), item.body());
-			assertTrue(item.header().equals(parsed.header()));
-			partsShouldBeEqual(item.parts().iterator(), parsed.parts().iterator());
-			matched = true;
+			if (matched) {
+				matched = item.header().equals(parsed.header())
+						&& partsAreEqual(item.parts().iterator(), parsed.parts().iterator());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			matched = false;
@@ -40,13 +38,16 @@ public final class HttpMultipartThatIsReadingAndWriting extends TypeSafeMatcher<
 		return matched;
 	}
 
-	private void partsShouldBeEqual(Iterator<Part> first, Iterator<Part> second) throws Exception {
+	private boolean partsAreEqual(Iterator<Part> first, Iterator<Part> second) throws Exception {
+		boolean equal = true;
 		while (first.hasNext()) {
 			Part fp = first.next();
 			Part sp = second.next();
-			assertTrue(fp.contentType().equals(sp.contentType()));
-			assertTrue(Arrays.equals(fp.content(), sp.content()));
+			equal = fp.contentType().equals(sp.contentType()) && Arrays.equals(fp.content(), sp.content());
+			if (!equal) {
+				break;
+			}
 		}
+		return equal;
 	}
-
 }

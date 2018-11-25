@@ -5,11 +5,11 @@ import java.io.InputStream;
 public final class OnePacketBinary implements Binary {
 
 	private final InputStream source;
-	private final int defaultPacketSize;
+	private final int defaultSize;
 
-	public OnePacketBinary(InputStream source, int defaultPacketSize) {
+	public OnePacketBinary(InputStream source, int defaultSize) {
 		this.source = source;
-		this.defaultPacketSize = defaultPacketSize;
+		this.defaultSize = defaultSize;
 	}
 
 	public OnePacketBinary(InputStream source) {
@@ -20,7 +20,7 @@ public final class OnePacketBinary implements Binary {
 	public byte[] content() throws Exception {
 		int available = this.source.available();
 		if (available == 0) {
-			available = this.defaultPacketSize;
+			available = this.defaultSize;
 		}
 		byte[] buffer = new byte[available];
 		int read = this.source.read(buffer);

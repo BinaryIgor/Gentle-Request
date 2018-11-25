@@ -1,7 +1,5 @@
 package com.iprogrammerr.gentle.request.multipart;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.hamcrest.Description;
@@ -27,12 +25,10 @@ public final class HttpPartThatIsReadingAndWriting extends TypeSafeMatcher<HttpP
 	protected boolean matchesSafely(HttpPart item) {
 		boolean matched;
 		try {
-			byte[] parsed = item.source();
-			HttpPart parsedPart = new HttpPart(parsed);
-			assertTrue(Arrays.equals(parsed, parsedPart.source()));
-			assertTrue(Arrays.equals(this.content, parsedPart.content()));
-			assertTrue(parsedPart.contentType().equals(this.contentType));
-			matched = true;
+			byte[] source = item.source();
+			HttpPart raw = new HttpPart(source);
+			matched = Arrays.equals(source, raw.source()) && Arrays.equals(this.content, raw.content())
+					&& raw.contentType().equals(this.contentType);
 		} catch (Exception e) {
 			matched = false;
 		}

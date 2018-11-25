@@ -37,7 +37,7 @@ public final class HttpMultipartBody implements MultipartBody {
 	private int bufferSize() throws Exception {
 		int size = 0;
 		for (Part part : this.parts) {
-			size += part.content().length;
+			size += part.source().length;
 		}
 		return size;
 	}
