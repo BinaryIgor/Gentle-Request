@@ -35,9 +35,9 @@ public final class HttpFormPartThatIsReadingAndWriting extends TypeSafeMatcher<H
 	protected boolean matchesSafely(HttpFormPart item) {
 		boolean matched;
 		try {
-			byte[] parsed = item.parsed();
+			byte[] parsed = item.source();
 			HttpFormPart parsedPart = new HttpFormPart(parsed);
-			assertTrue(Arrays.equals(parsed, parsedPart.parsed()));
+			assertTrue(Arrays.equals(parsed, parsedPart.source()));
 			assertTrue(this.contentType.equals(parsedPart.contentType())
 					&& this.name.equals(parsedPart.name())
 					&& this.filename.equals(item.filename()));

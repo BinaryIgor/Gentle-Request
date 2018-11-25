@@ -22,7 +22,7 @@ public final class HttpMultipartBody implements MultipartBody {
 		baos.write(boundary.getBytes());
 		baos.write(CRLF.getBytes());
 		for (int i = 0; i < this.parts.size(); i++) {
-			baos.write(this.parts.get(i).parsed());
+			baos.write(this.parts.get(i).source());
 			baos.write(CRLF.getBytes());
 			baos.write(boundary.getBytes());
 			if (i == (this.parts.size() - 1)) {

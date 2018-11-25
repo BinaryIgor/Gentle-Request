@@ -2,9 +2,14 @@ package com.iprogrammerr.gentle.request.multipart;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.iprogrammerr.gentle.request.data.Attributes;
-import com.iprogrammerr.gentle.request.data.Primitives;
+import com.iprogrammerr.gentle.request.binary.BinaryWithAttributes;
+import com.iprogrammerr.gentle.request.binary.BinaryWithSingleAttribute;
+import com.iprogrammerr.gentle.request.binary.DefaultBinaryWithAttributes;
+import com.iprogrammerr.gentle.request.initialization.UnreliableInitialization;
+import com.iprogrammerr.gentle.request.initialization.UnreliableStickyInitialization;
 
 public final class HttpPart implements Part {
 
@@ -12,20 +17,34 @@ public final class HttpPart implements Part {
 	private static final String TEXT_PLAIN = "text/plain";
 	private static final String CONTENT_TYPE_PREFIX = "Content-Type: ";
 	private static final String COLON = ":";
-	private byte[] parsed;
-	private final Primitives data;
+	private byte[] source;
+	private final UnreliableInitialization<BinaryWithAttributes> data;
 
-	private HttpPart(byte[] parsed, Primitives data) {
-		this.parsed = parsed;
+	private HttpPart(byte[] parsed, UnreliableInitialization<BinaryWithAttributes> data) {
+		this.source = parsed;
 		this.data = data;
 	}
 
-	public HttpPart(byte[] parsed) {
-		this(parsed, new Attributes());
+	public HttpPart(byte[] source) {
+		this(source, new UnreliableStickyInitialization<>(() -> {
+			String[] lines = new String(source).split(CRLF + CRLF);
+			String contentType;
+			int bodyIndex = (CRLF + CRLF).getBytes().length;
+			if (!lines[0].isEmpty()) {
+				bodyIndex += lines[0].getBytes().length;
+				contentType = lines[0].split(COLON)[1].trim();
+			} else {
+				contentType = TEXT_PLAIN;
+			}
+			Map<String, String> attributes = new HashMap<>();
+			attributes.put("contentType", contentType);
+			return new DefaultBinaryWithAttributes(Arrays.copyOfRange(source, bodyIndex, source.length), attributes);
+		}));
 	}
 
 	public HttpPart(String contentType, byte[] content) {
-		this(new byte[0], new Attributes().put("contentType", contentType).put("content", content));
+		this(new byte[0], new UnreliableStickyInitialization<>(
+				() -> new BinaryWithSingleAttribute(content, "contentType", contentType)));
 	}
 
 	public HttpPart(String content) {
@@ -34,23 +53,17 @@ public final class HttpPart implements Part {
 
 	@Override
 	public String contentType() throws Exception {
-		if (this.data.isEmpty()) {
-			read();
-		}
-		return this.data.stringValue("contentType");
+		return this.data.value().attribute("contentType");
 	}
 
 	@Override
 	public byte[] content() throws Exception {
-		if (this.data.isEmpty()) {
-			read();
-		}
-		return this.data.binaryValue("content");
+		return this.data.value().content();
 	}
 
 	@Override
-	public byte[] parsed() throws Exception {
-		if (this.parsed.length < 1) {
+	public byte[] source() throws Exception {
+		if (this.source.length < 1) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(content().length);
 			baos.write(CRLF.getBytes());
 			if (!contentType().equals(TEXT_PLAIN)) {
@@ -60,23 +73,8 @@ public final class HttpPart implements Part {
 			}
 			baos.write(CRLF.getBytes());
 			baos.write(content());
-			this.parsed = baos.toByteArray();
+			this.source = baos.toByteArray();
 		}
-		return this.parsed;
+		return this.source;
 	}
-
-	private void read() throws Exception {
-		String[] lines = new String(this.parsed).split(CRLF + CRLF);
-		String contentType;
-		int bodyIndex = (CRLF + CRLF).getBytes().length;
-		if (!lines[0].isEmpty()) {
-			bodyIndex += lines[0].getBytes().length;
-			contentType = lines[0].split(COLON)[1].trim();
-		} else {
-			contentType = TEXT_PLAIN;
-		}
-		this.data.put("contentType", contentType).put("content",
-				Arrays.copyOfRange(this.parsed, bodyIndex, this.parsed.length));
-	}
-
 }

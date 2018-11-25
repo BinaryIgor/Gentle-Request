@@ -27,9 +27,9 @@ public final class HttpPartThatIsReadingAndWriting extends TypeSafeMatcher<HttpP
 	protected boolean matchesSafely(HttpPart item) {
 		boolean matched;
 		try {
-			byte[] parsed = item.parsed();
+			byte[] parsed = item.source();
 			HttpPart parsedPart = new HttpPart(parsed);
-			assertTrue(Arrays.equals(parsed, parsedPart.parsed()));
+			assertTrue(Arrays.equals(parsed, parsedPart.source()));
 			assertTrue(Arrays.equals(this.content, parsedPart.content()));
 			assertTrue(parsedPart.contentType().equals(this.contentType));
 			matched = true;

@@ -26,7 +26,7 @@ public final class BinaryPartsThatHasGivenParts extends TypeSafeMatcher<BinaryPa
 		this(body, new UnreliableStickyInitialization<>(() -> {
 			List<byte[]> rawParts = new ArrayList<>(parts.size());
 			for (FormPart part : parts) {
-				rawParts.add(part.parsed());
+				rawParts.add(part.source());
 			}
 			return rawParts;
 		}));

@@ -6,5 +6,5 @@ public interface Part {
 
 	byte[] content() throws Exception;
 
-	byte[] parsed() throws Exception;
+	byte[] source() throws Exception;
 }
