@@ -7,10 +7,21 @@ public final class HttpBoundary implements Initialization<String> {
 	private static final int ASCII_0 = 48;
 	private static final int ASCII_UPPER_CASE_A = 65;
 	private static final int ASCII_LOWER_CASE_A = 97;
+	private final int min;
+	private final int max;
+
+	public HttpBoundary(int min, int max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public HttpBoundary() {
+		this(25, 70);
+	}
 
 	@Override
 	public String value() {
-		int length = 25 + (int) (Math.random() * 45);
+		int length = this.min + (int) (Math.random() * (this.max - this.min));
 		byte[] boundary = new byte[length];
 		for (int i = 0; i < boundary.length; ++i) {
 			boundary[i] = randomCharacter();

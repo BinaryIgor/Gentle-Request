@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.iprogrammerr.bright.server.initialization.UnreliableInitialization;
-import com.iprogrammerr.bright.server.initialization.UnreliableStickyInitialization;
 import com.iprogrammerr.gentle.request.binary.BinaryPattern;
 import com.iprogrammerr.gentle.request.binary.BinaryWithAttributes;
-import com.iprogrammerr.gentle.request.binary.HeadBodyPattern;
 import com.iprogrammerr.gentle.request.binary.DefaultBinaryWithAttributes;
+import com.iprogrammerr.gentle.request.binary.HeadBodyPattern;
+import com.iprogrammerr.gentle.request.initialization.UnreliableInitialization;
+import com.iprogrammerr.gentle.request.initialization.UnreliableStickyInitialization;
 
 public final class HttpFormPart implements FormPart {
 
