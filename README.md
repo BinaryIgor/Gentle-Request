@@ -98,9 +98,9 @@ connections.connect(new GetRequest(url/*,new AuthorizationHeader(SECRET),
 <dependency>
   <groupId>com.iprogrammerr</groupId>
   <artifactId>gentle-request</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
 </dependency>
 ```
 ## Gradle
 ```
-compile 'com.iprogrammerr:gentle-request:2.0.1'
+compile 'com.iprogrammerr:gentle-request:2.0.2'
