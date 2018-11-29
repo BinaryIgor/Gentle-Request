@@ -77,8 +77,7 @@ public final class ConnectionsThatAreSendingAndResponding extends TypeSafeMatche
 			matchMethods(OK, baseUrl + okUrl, item, HEAD, TRACE);
 			matchMethods(SEE_OTHER, baseUrl + notModifiedUrl, item, HEAD, TRACE);
 			matchMethods(BAD_REQUEST, baseUrl + badRequestUrl, item, HEAD, TRACE);
-			// matchMethods(INTERNAL_SERVER_ERROR, baseUrl + internalServerErrorUrl, item,
-			// HEAD, TRACE);
+			matchMethods(INTERNAL_SERVER_ERROR, baseUrl + internalServerErrorUrl, item, HEAD, TRACE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			matched = false;

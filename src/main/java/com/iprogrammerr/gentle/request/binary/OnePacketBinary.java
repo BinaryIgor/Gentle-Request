@@ -13,7 +13,7 @@ public final class OnePacketBinary implements Binary {
 	}
 
 	public OnePacketBinary(InputStream source) {
-		this(source, 512);
+		this(source, 1024);
 	}
 
 	@Override

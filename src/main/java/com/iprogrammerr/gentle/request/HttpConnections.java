@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.iprogrammerr.gentle.request.binary.Binary;
-import com.iprogrammerr.gentle.request.binary.OnePacketBinary;
 import com.iprogrammerr.gentle.request.binary.PacketsBinary;
+import com.iprogrammerr.gentle.request.binary.TillEndBinary;
 
 public final class HttpConnections implements Connections {
 
@@ -129,11 +128,10 @@ public final class HttpConnections implements Connections {
 	private byte[] body(InputStream inputStream, int size) {
 		try (BufferedInputStream is = new BufferedInputStream(inputStream)) {
 			byte[] body;
-			Binary binary = new OnePacketBinary(is);
 			if (size < 1) {
-				body = binary.content();
+				body = new TillEndBinary(is).content();
 			} else {
-				body = new PacketsBinary(binary, size).content();
+				body = new PacketsBinary(is, size).content();
 			}
 			return body;
 		} catch (Exception e) {
